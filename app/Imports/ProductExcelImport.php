@@ -133,34 +133,25 @@ class ProductExcelImport implements ToCollection
             ]);
 
 
-            // ===============================
-            // 5. XÓA ẢNH CŨ → THÊM ẢNH MỚI
-            // ===============================
 
-            // Xóa file + record ảnh cũ
-            $oldImgs = ImageProduct::where('product_id', $product->id)->get();
+            if (!empty($imageList)) {
 
-            foreach ($oldImgs as $img) {
-                $path = public_path($img->src);
+                // Lấy danh sách ảnh cũ (KHÔNG XÓA)
+                $oldImgs = ImageProduct::where('product_id', $product->id)->get();
 
-                if (file_exists($path)) {
-                    @unlink($path);
+                // Vị trí bắt đầu cho ảnh mới
+                $pos = ($oldImgs->max('position') ?? 0) + 1;
+
+                // Thêm ảnh mới, KHÔNG đụng ảnh cũ
+                foreach ($imageList as $img) {
+                    ImageProduct::create([
+                        'product_id' => $product->id,
+                        'src' => 'uploads/products/' . $img . '.jpg',
+                        'position' => $pos++,
+                        'create_date' => now(),
+                        'isactive' => 1,
+                    ]);
                 }
-            }
-
-            ImageProduct::where('product_id', $product->id)->delete();
-
-            // Thêm ảnh mới
-            $pos = 1;
-
-            foreach ($imageList as $img) {
-                ImageProduct::create([
-                    'product_id' => $product->id,
-                    'src' => 'uploads/products/' . $img .'jpg',
-                    'position' => $pos++,
-                    'create_date' => now(),
-                    'isactive' => 1,
-                ]);
             }
         }
     }

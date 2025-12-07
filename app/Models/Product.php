@@ -71,76 +71,71 @@ class Product extends Model
 
         return ['units' => $units, 'remainder_base' => $remainder];
     }
-    /**
-     * Tăng tồn kho (nhập) — $quantity là số lượng theo unit (vd: 5 hộp)
-     * Tạo 1 bản ghi inventory (một lô)
-     */
-    public function increaseStock(int $productUnitId, int $quantity, ?string $code = null, $date_end = null, $create_by = null): Inventory
+    
+    public function increaseStock($product_unit_id, $quantity, $code, $date_end, $user_id)
     {
-        $pu = ProductUnit::findOrFail($productUnitId);
+        $unit = ProductUnit::findOrFail($product_unit_id);
 
-        $baseQty = $quantity * max(1, $pu->quantity_per_unit); // convert to base unit
+        // số viên trong mỗi đơn vị (ví dụ: 1 hộp = 10 vỉ, 1 vỉ = 10 viên → 100 viên)
+        $qtyPerUnit = $unit->quantity_per_unit ?? 1;
 
-        $inventory = Inventory::create([
-            'product_id' => $this->id,
-            'product_unit_id' => $pu->id,
-            'code' => $code ?? 'IN' . strtoupper(uniqid()),
-            'date_end' => $date_end,
-            'import_quantity' => $baseQty,
-            'stock_quantity' => $baseQty,
-            'create_date' => now(),
-            'create_by' => $create_by,
-            'update_date' => null,
-            'update_by' => null,
+        // tổng số viên cần cộng lại
+        $baseQuantity = $quantity * $qtyPerUnit;
+
+        Inventory::create([
+            'product_id'      => $this->id,
+            'code'            => $code,
+            'date_end'        => $date_end,
+            'import_quantity' => $baseQuantity,
+            'stock_quantity'  => $baseQuantity,
+            'create_date'     => now(),
+            'create_by'       => $user_id,
         ]);
-
-        return $inventory;
     }
 
-    /**
-     * Giảm tồn (bán) theo FIFO.
-     * $productUnitId: đơn vị bán (vd: hộp)
-     * $quantity: số lượng bán theo đơn vị đó (vd: 2 hộp)
-     *
-     * Trả về true nếu thành công, ném Exception nếu không đủ hàng.
-     */
-    public function decreaseStockFIFO(int $productUnitId, int $quantity): bool
+
+    public function decreaseStockFIFO(int $productUnitId, int $quantity): array
     {
         $pu = ProductUnit::findOrFail($productUnitId);
         $neededBase = $quantity * max(1, $pu->quantity_per_unit);
 
-        return DB::transaction(function () use ($neededBase) {
-            // lock các bản ghi inventory để tránh race condition
+        return DB::transaction(function () use ($neededBase, $pu) {
+
             $batches = $this->inventory()
                 ->where('stock_quantity', '>', 0)
-                ->orderBy('create_date', 'asc')
+                ->orderBy('date_end', 'asc')
                 ->orderBy('id', 'asc')
                 ->lockForUpdate()
                 ->get();
 
             $remaining = $neededBase;
+            $usedBatches = [];
 
             foreach ($batches as $batch) {
                 if ($remaining <= 0) break;
 
-                if ($batch->stock_quantity >= $remaining) {
-                    $batch->stock_quantity = $batch->stock_quantity - $remaining;
-                    $batch->save();
-                    $remaining = 0;
-                    break;
-                } else {
-                    $remaining -= $batch->stock_quantity;
-                    $batch->stock_quantity = 0;
-                    $batch->save();
-                }
+                $take = min($remaining, $batch->stock_quantity);
+
+                // trừ tồn
+                $batch->stock_quantity -= $take;
+                $batch->save();
+
+                // lưu lại lô đã dùng - QUAN TRỌNG: thêm quantity_per_unit để controller quy đổi
+                $usedBatches[] = [
+                    'code' => $batch->code,
+                    'inventory_id' => $batch->id,
+                    'quantity_base' => $take,
+                    'quantity_per_unit' => $pu->quantity_per_unit  // ← THÊM ĐÂY
+                ];
+
+                $remaining -= $take;
             }
 
             if ($remaining > 0) {
-                // nếu không đủ, rollback bằng cách ném exception
                 throw new Exception('Không đủ tồn kho (cần ' . $neededBase . ' đơn vị cơ sở, thiếu ' . $remaining . ').');
             }
 
-            return true;
+            return $usedBatches;  // ← TRẢ LÔ ĐÃ XUẤT
         });
     }
 }

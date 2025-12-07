@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Order extends Model
 {
     use HasFactory;
@@ -28,9 +29,18 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class, 'order_id');
     }
 
-    // Một đơn thuộc 1 user
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'create_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'update_by');
     }
 }

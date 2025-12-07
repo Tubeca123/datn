@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="{{asset("assets/plugins/fontawesome-free/css/all.min.css")}}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset("assets/dist/css/adminlte.min.css")}}">
+  
 </head>
 <body class="hold-transition sidebar-mini layout-navbar-fixed">
 <!-- Site wrapper -->
@@ -195,7 +196,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fa fa-solid fa-heart"></i>
               <p>
-                Sản phẩm
+                Quản lý sản phẩm
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -232,7 +233,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-shopping-cart"></i>
               <p>
-                Đơn hàng
+                Quản lý đơn hàng
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -244,7 +245,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="/admin/orders" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Danh sách đơn hàng</p>
                 </a>
@@ -279,7 +280,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
-                Forms
+                Tài khoản khách hàng
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -287,7 +288,7 @@
               <li class="nav-item">
                 <a href="../forms/general.html" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>General Elements</p>
+                  <p>Tìm đơn </p>
                 </a>
               </li>
               <li class="nav-item">
@@ -745,5 +746,8 @@
 <script src="{{asset("assets/dist/js/adminlte.min.js")}}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{asset("assets/dist/js/demo.js")}}"></script>
+<script src="https://cdn.datatables.net/2.1.2/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.1.2/js/dataTables.bootstrap5.min.js"></script>
+@stack('scripts')
 </body>
 </html>

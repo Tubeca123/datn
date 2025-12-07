@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\ProductUnit;
-
+use Illuminate\Support\Facades\Auth;
 class ProductController extends Controller
 {
     /**
@@ -160,7 +160,17 @@ class ProductController extends Controller
     }
 
 
+    public function toggle($id)
+    {
+        $cate = Product::findOrFail($id);
 
+        $cate->isactive = $cate->isactive ? 0 : 1;
+        $cate->update_date = now();
+        $cate->update_by = Auth::user()->id;
+        $cate->save();
+
+        return back()->with('success', 'Cập nhật trạng thái thành công!');
+    }
     /**
      * Remove the specified resource from storage.
      */
@@ -177,5 +187,30 @@ class ProductController extends Controller
         Excel::import(new ProductExcelImport, $request->file('file'));
 
         return back()->with('success', 'Nhập thuốc thành công!');
+    }
+
+    /**
+     * API: Lấy danh sách lô (inventory) của 1 sản phẩm
+     */
+    public function getProductInventories($productId)
+    {
+        $product = Product::findOrFail($productId);
+        
+        $inventories = $product->inventory()
+            ->orderBy('date_end', 'asc')
+            ->orderBy('id', 'asc')
+            ->get()
+            ->map(function ($inv) {
+                return [
+                    'id' => $inv->id,
+                    'code' => $inv->code,
+                    'create_date' => $inv->create_date ? \Carbon\Carbon::parse($inv->create_date)->format('d/m/Y') : 'N/A',
+                    'date_end' => $inv->date_end ? \Carbon\Carbon::parse($inv->date_end)->format('d/m/Y') : 'N/A',
+                    'import_quantity' => $inv->import_quantity,
+                    'stock_quantity' => $inv->stock_quantity
+                ];
+            });
+
+        return response()->json($inventories);
     }
 }

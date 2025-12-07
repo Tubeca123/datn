@@ -13,7 +13,7 @@
                         <li class="breadcrumb-item">
                             <a href="{{ route('admin.orders.index') }}">Đơn hàng</a>
                         </li>
-                        <li class="breadcrumb-item active">Chi tiết #{{ $order->id }}</li>
+                        <li class="breadcrumb-item active">Chi tiết</li>
                     </ol>
                 </nav>
             </div>
@@ -32,7 +32,6 @@
             </div>
         </div>
 
-        <!-- Print Header (only visible when printing) -->
         <div class="print-only text-center mb-4" style="display:none">
             <h2>ĐơN THUỐC</h2>
             <p>Mã đơn: #{{ $order->id }}</p>
@@ -48,29 +47,12 @@
                     </div>
                     <div class="card-body">
                         <table class="table table-sm table-borderless">
-                            <tr>
-                                <td width="120"><strong>Mã đơn:</strong></td>
-                                <td>#{{ $order->id }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Khách hàng:</strong></td>
-                                <td>
-                                    @if($order->customer)
-                                        <strong>{{ $order->customer->name }}</strong><br>
-                                        <small class="text-muted">
-                                            <i class="fas fa-phone"></i> {{ $order->customer->phone ?? 'N/A' }}<br>
-                                            <i class="fas fa-envelope"></i> {{ $order->customer->email ?? 'N/A' }}
-                                        </small>
-                                    @else
-                                        <span class="badge badge-secondary">Khách vãng lai</span>
-                                    @endif
-                                </td>
-                            </tr>
+                            
                             <tr>
                                 <td><strong>Trạng thái:</strong></td>
                                 <td>
                                     @if($order->isactive == 1)
-                                        <span class="badge badge-success badge-lg">Đang hoạt động</span>
+                                        <span class="badge badge-success badge-lg">Đã thanh toán</span>
                                     @else
                                         <span class="badge badge-secondary badge-lg">Đã hủy</span>
                                     @endif
@@ -81,10 +63,18 @@
                                 <td>{{ \Carbon\Carbon::parse($order->create_date)->format('d/m/Y H:i:s') }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Người tạo:</strong></td>
+                                <td><strong>Tên khách hàng:</strong></td>
                                 <td>
                                     <span class="badge badge-info">
-                                        {{ $order->user->name ?? 'N/A' }}
+                                        {{ $order->user->name ?? 'Khách mua ngoài' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Người tạo đơn:</strong></td>
+                                <td>
+                                    <span class="badge badge-info">
+                                        {{ $order->creator->name ?? 'N/A' }}
                                     </span>
                                 </td>
                             </tr>
@@ -157,7 +147,7 @@
                                         <tr>
                                             <th width="50" class="text-center">#</th>
                                             <th>Sản phẩm</th>
-                                            <th width="120" class="text-center">Lô thuốc</th>
+                                            <th>Lô thuốc</th>
                                             <th width="100" class="text-center">Đơn vị</th>
                                             <th width="100" class="text-center">Số lượng</th>
                                             <th width="120" class="text-right">Đơn giá</th>
@@ -175,6 +165,7 @@
                                                 <td class="text-center">{{ $index + 1 }}</td>
                                                 <td>
                                                     <strong>{{ $detail->product->name ?? 'N/A' }}</strong>
+                                                    
                                                     @if($detail->product)
                                                         <br>
                                                         <small class="text-muted">
@@ -197,6 +188,7 @@
                                                         </small>
                                                     @endif
                                                 </td>
+                                                <td><strong>{{ $detail->inventory->id ?? 'N/A' }}</strong></td>
                                                 <td class="text-center">
                                                     @if($detail->productUnit && $detail->productUnit->unit)
                                                         <span class="badge badge-primary">
@@ -262,7 +254,7 @@
                                         </p>
                                         <small class="text-muted">
                                             {{ \Carbon\Carbon::parse($order->create_date)->format('d/m/Y H:i:s') }}
-                                            - Bởi: {{ $order->user->name ?? 'N/A' }}
+                                            - Bởi: {{ App\Models\User::find($order->create_by)->name ?? 'N/A' }}
                                         </small>
                                     </div>
                                 </div>
@@ -296,7 +288,7 @@
                     <ul class="mb-0">
                         <li>Tồn kho sẽ được hoàn trả cho tất cả sản phẩm</li>
                         <li>Đơn hàng sẽ được đánh dấu là đã hủy</li>
-                        <li><strong class="text-danger">Thao tác này không thể hoàn tác</strong></li>
+                        
                     </ul>
                 </div>
                 <div class="form-group">

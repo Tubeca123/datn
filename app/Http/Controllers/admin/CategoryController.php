@@ -65,13 +65,6 @@ class CategoryController extends Controller
         return redirect()->route('list_category')->with('success', 'Cập nhật danh mục thành công!');
     }
 
-    public function delete($id)
-    {
-        $category = Category::findOrFail($id);
-        $category->delete();
-
-        return redirect()->route('category.index')->with('success', 'Xóa danh mục thành công!');
-    }
     public function toggle($id)
     {
         $cate = Category::findOrFail($id);

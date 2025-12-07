@@ -26,23 +26,26 @@ Route::get('/test2', [UserController::class, 'index']);
 Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
     Route::get('/trangchu_admin', [DashboardController::class, 'index'])->name('trang_chu');
 
-    
-    
+
+
     Route::get('/orders/create', [OrderController::class, 'create'])->name('order.create');
-
-    // API tìm kiếm thuốc
     Route::get('/api/products/search', [OrderController::class, 'searchProduct'])->name('api.products.search');
-
-    // API lấy đơn vị – giá – tồn kho theo sản phẩm
     Route::get('/api/product/{id}/units', [OrderController::class, 'getUnits'])->name('api.product.units');
-
-    // API tạo đơn
+    Route::get('/api/product/{productId}/unit/{unitId}/inventories', [OrderController::class, 'getInventories'])->name('api.product.inventories');
     Route::post('/orders/store', [OrderController::class, 'store'])->name('order.store');
+    Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('admin.orders.cancel');
+    Route::get('/api/products/search', [OrderController::class, 'searchProduct'])->name('admin.api.products.search');
+    Route::get('/api/product/{id}/units', [OrderController::class, 'getUnits'])->name('admin.api.product.units');
+    Route::get('/api/customer', [OrderController::class, 'findByPhone']);
 
 
     Route::get('/list_product', [ProductController::class, 'index'])->name('list_product');
     Route::get('/edit_product/{id}', [ProductController::class, 'edit'])->name('edit_product');
     Route::post('/update_product/{id}', [ProductController::class, 'update'])->name('update_product');
+    Route::get('/toggle_product/{id}', [ProductController::class, 'toggle'])->name('toggle_product');
+    Route::get('/api/product/{productId}/inventories', [ProductController::class, 'getProductInventories'])->name('api.product.inventories');
 
     Route::get('/list_category', [CategoryController::class, 'index'])->name('list_category');
     Route::get('/create_category', [CategoryController::class, 'create'])->name('create_category');
@@ -50,8 +53,7 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
     Route::get('/edit_category/{id}', [CategoryController::class, 'edit'])->name('edit_category');
     Route::post('/update_category/{id}', [CategoryController::class, 'update'])->name('update_category');
     Route::get('/delete_category/{id}', [CategoryController::class, 'delete'])->name('delete_category');
-    Route::get('/toggle_category/{id}', [CategoryController::class, 'toggle'])
-        ->name('toggle_category');
+    Route::get('/toggle_category/{id}', [CategoryController::class, 'toggle'])->name('toggle_category');
 
     Route::get('/list_brand',               [BrandController::class, 'index'])->name('list_brand');
     Route::get('/create_brand',         [BrandController::class, 'create'])->name('create_brand');
