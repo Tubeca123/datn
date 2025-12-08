@@ -3,7 +3,7 @@
 @section('page_content')
 <div class="content-wrapper">
     <div class="container-fluid mt-4">
-        
+
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4 no-print">
             <div>
@@ -22,10 +22,16 @@
                     <i class="fas fa-arrow-left"></i> Quay lại
                 </a>
                 @if($order->isactive == 1)
-                    <button type="button" class="btn btn-danger" id="cancelOrderBtn">
-                        <i class="fas fa-times"></i> Hủy đơn
-                    </button>
+                <button type="button" class="btn btn-danger" id="cancelOrderBtn">
+                    <i class="fas fa-times"></i> Hủy đơn
+                </button>
+                <a href="{{ route('edit_order', $order->id) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Sửa đơn
+                </a>
                 @endif
+
+                
+                
                 <button class="btn btn-info" onclick="window.print()">
                     <i class="fas fa-print"></i> In đơn
                 </button>
@@ -47,14 +53,14 @@
                     </div>
                     <div class="card-body">
                         <table class="table table-sm table-borderless">
-                            
+
                             <tr>
                                 <td><strong>Trạng thái:</strong></td>
                                 <td>
                                     @if($order->isactive == 1)
-                                        <span class="badge badge-success badge-lg">Đã thanh toán</span>
+                                    <span class="badge badge-success badge-lg">Đã thanh toán</span>
                                     @else
-                                        <span class="badge badge-secondary badge-lg">Đã hủy</span>
+                                    <span class="badge badge-secondary badge-lg">Đã hủy</span>
                                     @endif
                                 </td>
                             </tr>
@@ -79,10 +85,10 @@
                                 </td>
                             </tr>
                             @if($order->update_date)
-                                <tr>
-                                    <td><strong>Cập nhật:</strong></td>
-                                    <td>{{ \Carbon\Carbon::parse($order->update_date)->format('d/m/Y H:i:s') }}</td>
-                                </tr>
+                            <tr>
+                                <td><strong>Cập nhật:</strong></td>
+                                <td>{{ \Carbon\Carbon::parse($order->update_date)->format('d/m/Y H:i:s') }}</td>
+                            </tr>
                             @endif
                         </table>
                     </div>
@@ -109,20 +115,20 @@
                                 <strong>{{ number_format($order->total, 0, ',', '.') }} đ</strong>
                             </h5>
                         </div>
-                        
+
                         @php
-                            $calculatedTotal = $order->details->sum(function($d) {
-                                return $d->quantity * $d->getPrice();
-                            });
+                        $calculatedTotal = $order->details->sum(function($d) {
+                        return $d->quantity * $d->getPrice();
+                        });
                         @endphp
-                        
+
                         @if(abs($calculatedTotal - $order->total) > 1)
-                            <div class="alert alert-warning mt-3 mb-0">
-                                <small>
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Tổng tính lại: {{ number_format($calculatedTotal, 0, ',', '.') }} đ
-                                </small>
-                            </div>
+                        <div class="alert alert-warning mt-3 mb-0">
+                            <small>
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Tổng tính lại: {{ number_format($calculatedTotal, 0, ',', '.') }} đ
+                            </small>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -136,131 +142,116 @@
                     </div>
                     <div class="card-body">
                         @if($order->details->isEmpty())
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-circle"></i>
-                                Đơn hàng không có sản phẩm
-                            </div>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle"></i>
+                            Đơn hàng không có sản phẩm
+                        </div>
                         @else
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover table-sm">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th width="50" class="text-center">#</th>
-                                            <th>Sản phẩm</th>
-                                            <th>Lô thuốc</th>
-                                            <th width="100" class="text-center">Đơn vị</th>
-                                            <th width="100" class="text-center">Số lượng</th>
-                                            <th width="120" class="text-right">Đơn giá</th>
-                                            <th width="130" class="text-right">Thành tiền</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php $totalAmount = 0; @endphp
-                                        @foreach($order->details as $index => $detail)
-                                            @php 
-                                                $amount = $detail->quantity * $detail->price;
-                                                $totalAmount += $amount;
-                                            @endphp
-                                            <tr>
-                                                <td class="text-center">{{ $index + 1 }}</td>
-                                                <td>
-                                                    <strong>{{ $detail->product->name ?? 'N/A' }}</strong>
-                                                    
-                                                    @if($detail->product)
-                                                        <br>
-                                                        <small class="text-muted">
-                                                            @if($detail->product->brand)
-                                                                <span class="badge badge-light">
-                                                                    {{ $detail->product->brand->name }}
-                                                                </span>
-                                                            @endif
-                                                            @if($detail->product->category)
-                                                                <span class="badge badge-light">
-                                                                    {{ $detail->product->category->name }}
-                                                                </span>
-                                                            @endif
-                                                        </small>
-                                                    @else
-                                                        <br>
-                                                        <small class="text-danger">
-                                                            <i class="fas fa-exclamation-triangle"></i>
-                                                            Sản phẩm không tồn tại (ID: {{ $detail->product_id }})
-                                                        </small>
-                                                    @endif
-                                                </td>
-                                                <td><strong>{{ $detail->inventory->id ?? 'N/A' }}</strong></td>
-                                                <td class="text-center">
-                                                    @if($detail->productUnit && $detail->productUnit->unit)
-                                                        <span class="badge badge-primary">
-                                                            {{ $detail->productUnit->unit->name }}
-                                                        </span>
-                                                    @else
-                                                        <span class="badge badge-secondary">N/A</span>
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
-                                                    <strong>{{ number_format($detail->quantity, 2) }}</strong>
-                                                </td>
-                                                <td class="text-right">
-                                                    {{ number_format($detail->price, 0, ',', '.') }} đ
-                                                </td>
-                                                <td class="text-right">
-                                                    <strong>{{ number_format($amount, 0, ',', '.') }} đ</strong>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                    <tfoot class="bg-light">
-                                        <tr>
-                                            <th colspan="5" class="text-right">Tổng cộng:</th>
-                                            <th class="text-right text-success">
-                                                <strong>{{ number_format($totalAmount, 0, ',', '.') }} đ</strong>
-                                            </th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th width="50" class="text-center">#</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Lô thuốc</th>
+                                        <th width="100" class="text-center">Đơn vị</th>
+                                        <th width="100" class="text-center">Số lượng</th>
+                                        <th width="120" class="text-right">Đơn giá</th>
+                                        <th width="130" class="text-right">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $totalAmount = 0; @endphp
+                                    @foreach($order->details as $index => $detail)
+                                    @php
+                                    $amount = $detail->quantity * $detail->price;
+                                    $totalAmount += $amount;
+                                    @endphp
+                                    <tr>
+                                        <td class="text-center">{{ $index + 1 }}</td>
+                                        <td>
+                                            <strong>{{ $detail->product->name ?? 'N/A' }}</strong>
+
+                                        </td>
+                                        <td><strong>{{ $detail->inventory->id ?? 'N/A' }}</strong></td>
+                                        <td class="text-center">
+                                            @if($detail->productUnit && $detail->productUnit->unit)
+                                            <span class="badge badge-primary">
+                                                {{ $detail->productUnit->unit->name }}
+                                            </span>
+                                            @else
+                                            <span class="badge badge-secondary">N/A</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <strong>{{ number_format($detail->quantity, 2) }}</strong>
+                                        </td>
+                                        <td class="text-right">
+                                            {{ number_format($detail->price, 0, ',', '.') }} đ
+                                        </td>
+                                        <td class="text-right">
+                                            <strong>{{ number_format($amount, 0, ',', '.') }} đ</strong>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot class="bg-light">
+                                    <tr>
+                                        <th colspan="5" class="text-right">Tổng cộng:</th>
+                                        <th class="text-right text-success">
+                                            <strong>{{ number_format($totalAmount, 0, ',', '.') }} đ</strong>
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                         @endif
                     </div>
                 </div>
 
                 <!-- Lịch sử thay đổi -->
                 @if($order->update_date)
-                    <div class="card mt-4 no-print">
-                        <div class="card-header bg-warning">
-                            <h5 class="mb-0"><i class="fas fa-history"></i> Lịch sử thay đổi</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="timeline">
-                                <div class="timeline-item">
-                                    <div class="timeline-marker bg-danger"></div>
-                                    <div class="timeline-content">
-                                        <p class="mb-0">
-                                            <strong>Đơn hàng đã bị hủy</strong>
-                                        </p>
-                                        <small class="text-muted">
-                                            {{ \Carbon\Carbon::parse($order->update_date)->format('d/m/Y H:i:s') }}
-                                            @if($order->update_by)
-                                                - Bởi: {{ App\Models\User::find($order->update_by)->name ?? 'N/A' }}
+                <div class="card mt-4 no-print">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0"><i class="fas fa-history"></i> Lịch sử thay đổi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-marker @if($order->isactive == 0) bg-danger @else bg-info @endif"></div>
+                                <div class="timeline-content">
+                                    <p class="mb-0">
+                                        <strong>
+                                            @if($order->isactive == 0)
+                                                Đơn hàng đã bị hủy
+                                            @else
+                                                Đơn hàng đã được cập nhật
                                             @endif
-                                        </small>
-                                    </div>
+                                        </strong>
+                                    </p>
+                                    <small class="text-muted">
+                                        {{ \Carbon\Carbon::parse($order->update_date)->format('d/m/Y H:i:s') }}
+                                        @if($order->update_by)
+                                        - Bởi: {{ App\Models\User::find($order->update_by)->name ?? 'N/A' }}
+                                        @endif
+                                    </small>
                                 </div>
-                                <div class="timeline-item">
-                                    <div class="timeline-marker bg-success"></div>
-                                    <div class="timeline-content">
-                                        <p class="mb-0">
-                                            <strong>Đơn hàng được tạo</strong>
-                                        </p>
-                                        <small class="text-muted">
-                                            {{ \Carbon\Carbon::parse($order->create_date)->format('d/m/Y H:i:s') }}
-                                            - Bởi: {{ App\Models\User::find($order->create_by)->name ?? 'N/A' }}
-                                        </small>
-                                    </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-success"></div>
+                                <div class="timeline-content">
+                                    <p class="mb-0">
+                                        <strong>Đơn hàng được tạo</strong>
+                                    </p>
+                                    <small class="text-muted">
+                                        {{ \Carbon\Carbon::parse($order->create_date)->format('d/m/Y H:i:s') }}
+                                        - Bởi: {{ App\Models\User::find($order->create_by)->name ?? 'N/A' }}
+                                    </small>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
                 @endif
             </div>
         </div>
@@ -288,7 +279,7 @@
                     <ul class="mb-0">
                         <li>Tồn kho sẽ được hoàn trả cho tất cả sản phẩm</li>
                         <li>Đơn hàng sẽ được đánh dấu là đã hủy</li>
-                        
+
                     </ul>
                 </div>
                 <div class="form-group">
@@ -310,168 +301,169 @@
 </div>
 
 <style>
-/* Print styles */
-@media print {
-    .no-print,
-    .btn,
-    .breadcrumb,
-    .card-header,
-    nav,
-    .modal,
-    .timeline,
-    .alert {
-        display: none !important;
-    }
-    
-    .print-only {
-        display: block !important;
-    }
-    
-    .card {
-        border: 1px solid #dee2e6 !important;
-        box-shadow: none !important;
-        page-break-inside: avoid;
-    }
-    
-    .table {
-        font-size: 11px;
-    }
-    
-    .badge {
-        border: 1px solid #000;
-    }
-    
-    body {
-        font-size: 12px;
-    }
-    
-    @page {
-        margin: 1.5cm;
-    }
-}
+    /* Print styles */
+    @media print {
 
-/* Timeline styles */
-.timeline {
-    position: relative;
-    padding: 20px 0;
-}
+        .no-print,
+        .btn,
+        .breadcrumb,
+        .card-header,
+        nav,
+        .modal,
+        .timeline,
+        .alert {
+            display: none !important;
+        }
 
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 7px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: #e9ecef;
-}
+        .print-only {
+            display: block !important;
+        }
 
-.timeline-item {
-    position: relative;
-    padding-left: 40px;
-    padding-bottom: 25px;
-}
+        .card {
+            border: 1px solid #dee2e6 !important;
+            box-shadow: none !important;
+            page-break-inside: avoid;
+        }
 
-.timeline-item:last-child {
-    padding-bottom: 0;
-}
+        .table {
+            font-size: 11px;
+        }
 
-.timeline-marker {
-    position: absolute;
-    left: 0;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
+        .badge {
+            border: 1px solid #000;
+        }
 
-.timeline-content {
-    padding: 10px 15px;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+        body {
+            font-size: 12px;
+        }
 
-/* Badge sizing */
-.badge-lg {
-    padding: 0.5em 0.75em;
-    font-size: 90%;
-}
-
-/* Responsive table */
-@media (max-width: 768px) {
-    .table-responsive {
-        font-size: 12px;
+        @page {
+            margin: 1.5cm;
+        }
     }
-}
+
+    /* Timeline styles */
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e9ecef;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        padding-bottom: 25px;
+    }
+
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: 0;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .timeline-content {
+        padding: 10px 15px;
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Badge sizing */
+    .badge-lg {
+        padding: 0.5em 0.75em;
+        font-size: 90%;
+    }
+
+    /* Responsive table */
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 12px;
+        }
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const cancelBtn = document.getElementById('cancelOrderBtn');
-    
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', function() {
-            $('#cancelOrderModal').modal('show');
-        });
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const cancelBtn = document.getElementById('cancelOrderBtn');
 
-    document.getElementById('confirmCancelBtn').addEventListener('click', function() {
-        const spinner = document.getElementById('cancelSpinner');
-        const btn = this;
-        const reason = document.getElementById('cancelReason').value;
-        
-        btn.disabled = true;
-        spinner.classList.remove('d-none');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                $('#cancelOrderModal').modal('show');
+            });
+        }
 
-        fetch('/admin/orders/{{ $order->id }}/cancel', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                reason: reason
-            })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                $('#cancelOrderModal').modal('hide');
-                
-                // Show success message
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-success alert-dismissible fade show';
-                alertDiv.innerHTML = `
+        document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+            const spinner = document.getElementById('cancelSpinner');
+            const btn = this;
+            const reason = document.getElementById('cancelReason').value;
+
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
+            fetch('/admin/orders/{{ $order->id }}/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        reason: reason
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        $('#cancelOrderModal').modal('hide');
+
+                        // Show success message
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                        alertDiv.innerHTML = `
                     <strong>Thành công!</strong> ${data.message}
                     <button type="button" class="close" data-dismiss="alert">
                         <span>&times;</span>
                     </button>
                 `;
-                document.querySelector('.content-wrapper .container-fluid').insertBefore(
-                    alertDiv, 
-                    document.querySelector('.content-wrapper .container-fluid').firstChild
-                );
-                
-                // Reload sau 2 giây
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else {
-                alert('Lỗi: ' + (data.error || 'Không thể hủy đơn hàng'));
-                btn.disabled = false;
-                spinner.classList.add('d-none');
-            }
-        })
-        .catch(err => {
-            console.error('Cancel error:', err);
-            alert('Lỗi khi hủy đơn hàng. Vui lòng thử lại.');
-            btn.disabled = false;
-            spinner.classList.add('d-none');
+                        document.querySelector('.content-wrapper .container-fluid').insertBefore(
+                            alertDiv,
+                            document.querySelector('.content-wrapper .container-fluid').firstChild
+                        );
+
+                        // Reload sau 2 giây
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        alert('Lỗi: ' + (data.error || 'Không thể hủy đơn hàng'));
+                        btn.disabled = false;
+                        spinner.classList.add('d-none');
+                    }
+                })
+                .catch(err => {
+                    console.error('Cancel error:', err);
+                    alert('Lỗi khi hủy đơn hàng. Vui lòng thử lại.');
+                    btn.disabled = false;
+                    spinner.classList.add('d-none');
+                });
         });
     });
-});
 </script>
 
 @endsection

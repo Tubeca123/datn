@@ -170,7 +170,7 @@
           <img src="{{asset("assets/dist/img/user2-160x160.jpg")}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">{{ Auth::user()->name }}</a>
+          <a href="#" class="d-block">{{ Auth::user()->name  }}</a>
         </div>
       </div>
 
@@ -286,15 +286,15 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="../forms/general.html" class="nav-link">
+                <a href="{{ route('list_user') }}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Danh sách tài khoản </p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="../forms/advanced.html" class="nav-link">
+                <a href="{{route('create_user')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Thêm mới </p>
+                  <p>Thêm mới tài khoản</p>
                 </a>
               </li>
               

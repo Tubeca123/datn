@@ -20,4 +20,8 @@ class User extends Authenticatable
     protected $table = 'users';
     public $timestamps = false;
     
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\SearchUser;
+
 Route::get('/', function () {
     return view('admin/master_layout');
 });
@@ -37,6 +38,10 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
     Route::get('/api/products/search', [OrderController::class, 'searchProduct'])->name('admin.api.products.search');
     Route::get('/api/product/{id}/units', [OrderController::class, 'getUnits'])->name('admin.api.product.units');
     Route::get('/api/customer', [OrderController::class, 'findByPhone']);
+    Route::get('/edit_order/{id}', [OrderController::class, 'edit'])->name('edit_order');
+    Route::post('/edit_order/{id}/update', [OrderController::class, 'update'])->name('edit_order.update');
+    Route::post('/edit_order/{id}/detail/{detailId}/delete', [OrderController::class, 'deleteDetail'])->name('orders.detail.delete');
+    Route::post('/edit_orders/{id}/detail/{detailId}/update', [OrderController::class, 'updateDetail'])->name('orders.detail.update');
 
 
     Route::get('/list_product', [ProductController::class, 'index'])->name('list_product');
@@ -63,6 +68,12 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
 
 
     Route::get('/list_user', [SearchUser::class, 'index'])->name('list_user');
+    Route::get('/api/user/{userId}/detail', [SearchUser::class, 'getDetail'])->name('api.user.detail');
+    Route::post('/api/user/{userId}/toggle-status', [SearchUser::class, 'toggleStatus'])->name('api.user.toggle');
+    Route::get('/create_user', [SearchUser::class, 'create'])->name('create_user');
+    Route::post('/store_user', [SearchUser::class, 'store'])->name('store_user');
+    Route::get('/oder_user/{id}', [SearchUser::class, 'show'])->name('orders_user_show');
+    Route::get('/api/user/{userId}/orders', [SearchUser::class, 'getDetail'])->name('api.user.orders');
 
     Route::post('/inventory/import', [ProductController::class, 'importExcel']);
 });

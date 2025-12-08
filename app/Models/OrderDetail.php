@@ -54,17 +54,15 @@ class OrderDetail extends Model
     {
         return $this->belongsTo(Inventory::class, 'inventory_id');
     }
-    /**
-     * Lấy giá - ưu tiên giá đã lưu, nếu không có thì lấy từ product_unit
-     */
+    
     public function getPrice(): float
     {
-        // Nếu đã có price được lưu (snapshot), dùng nó
+        
         if ($this->price !== null && $this->price > 0) {
             return $this->price;
         }
 
-        // Nếu không, lấy từ productUnit hiện tại
+        
         if ($this->productUnit) {
             return $this->productUnit->price_sale ?? 0;
         }
@@ -72,30 +70,17 @@ class OrderDetail extends Model
         return 0;
     }
 
-    /**
-     * Lấy tên đơn vị
-     */
+    
     public function getUnitNameAttribute(): string
     {
         return $this->productUnit?->unit?->name ?? 'N/A';
     }
 
-    /**
-     * Lấy tên sản phẩm
-     */
+   
     public function getProductNameAttribute(): string
     {
         return $this->product?->name ?? 'Sản phẩm không tồn tại';
     }
 
-    /**
-     * Lấy số viên cơ sở (base unit) từ quantity
-     */
-    public function getBaseQuantity(): int
-    {
-        if (!$this->productUnit) return 0;
-
-        $qtyPerUnit = max(1, $this->productUnit->quantity_per_unit ?? 1);
-        return (int) ($this->quantity * $qtyPerUnit);
-    }
+    
 }
