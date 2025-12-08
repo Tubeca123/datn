@@ -87,7 +87,7 @@ class OrderController extends Controller
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|integer|exists:product,id',
             'items.*.unit_id' => 'required|integer|exists:product_unit,id',
-            'items.*.inventory_id' => 'required|integer|exists:inventory,id',  // ← THÊM: lô cụ thể
+            'items.*.inventory_id' => 'required|integer|exists:inventory,id', 
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.price' => 'required|numeric|min:0',
             'customer_id' => 'nullable|integer|exists:users,id'
@@ -187,20 +187,11 @@ class OrderController extends Controller
             $query->whereDate('create_date', '<=', $request->date_to);
         }
 
-        // Tìm kiếm theo mã đơn
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('id', 'LIKE', "%{$search}%")
-                    ->orWhereHas('user', function ($q2) use ($search) {
-                        $q2->where('name', 'LIKE', "%{$search}%");
-                    });
-            });
-        }
+        
 
         $orders = $query->orderBy('create_date', 'desc')
             ->paginate(20)
-            ->appends($request->all()); // Giữ lại params khi phân trang
+            ->appends($request->all()); 
 
         return view('admin.pages.order.index', compact('orders'));
     }

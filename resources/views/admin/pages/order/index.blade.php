@@ -42,12 +42,7 @@
                         <label class="mr-2">Đến ngày:</label>
                         <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
                     </div>
-                    <div class="form-group mr-3">
-                        <input type="text" name="search" class="form-control" placeholder="Tìm theo mã đơn..." value="{{ request('search') }}">
-                    </div>
-                    <button type="submit" class="btn btn-info mr-2">
-                        <i class="fas fa-search"></i> Tìm kiếm
-                    </button>
+                    
                     <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">
                         <i class="fas fa-redo"></i> Làm mới
                     </a>
@@ -59,7 +54,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
+                    <table id="example2" class="table table-bordered table-hover">
                         <thead class="thead-light">
                             <tr>
                                 <th width="80">Mã ĐH</th>
@@ -210,3 +205,67 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 @endsection
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#example2').DataTable({
+            pageLength: 10,
+            language: {
+                lengthMenu: "Hiển thị _MENU_ dòng",
+                search: "Tìm kiếm:",
+                zeroRecords: "Không tìm thấy dữ liệu",
+                info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                infoEmpty: "Hiển thị 0 đến 0 của 0 mục",
+                infoFiltered: "(lọc từ _MAX_ tổng số mục)",
+                paginate: {
+                    first: "Đầu",
+                    last: "Cuối",
+                    next: "Tiếp",
+                    previous: "Trước"
+                }
+            }
+        });
+
+        // Xử lý click nút Chi tiết
+        $(document).on('click', '.viewInventory', function() {
+            const productId = $(this).data('product-id');
+            const productName = $(this).data('product-name');
+            
+            $('#inventoryModalLabel').text('Chi tiết Tồn kho - ' + productName);
+            $('#inventoryTableBody').html('<tr><td colspan="6" class="text-center">Đang tải...</td></tr>');
+            $('#inventoryModal').modal('show');
+
+            // Fetch dữ liệu lô
+            fetch('/admin/api/product/' + productId + '/inventories', {
+                credentials: 'same-origin'
+            })
+            .then(r => r.json())
+            .then(inventories => {
+                let html = '';
+                if (inventories.length === 0) {
+                    html = '<tr><td colspan="6" class="text-center text-muted">Không có lô nào</td></tr>';
+                } else {
+                    inventories.forEach(inv => {
+                        const expiredClass = new Date(inv.date_end) < new Date() ? 'table-danger' : 'table-success';
+                        const status = new Date(inv.date_end) < new Date() ? 'Hết hạn' : 'Còn hạn';
+                        
+                        html += `<tr class="${expiredClass}">
+                            <td>${inv.code}- ${inv.id}</td>
+                            <td>${inv.create_date || 'N/A'}</td>
+                            <td>${inv.date_end || 'N/A'}</td>
+                            <td>${inv.import_quantity}</td>
+                            <td>${inv.stock_quantity}</td>
+                            <td>${status}</td>
+                        </tr>`;
+                    });
+                }
+                $('#inventoryTableBody').html(html);
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                $('#inventoryTableBody').html('<tr><td colspan="6" class="text-center text-danger">Lỗi tải dữ liệu</td></tr>');
+            });
+        });
+    });
+</script>
+@endpush

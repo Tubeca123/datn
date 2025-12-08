@@ -9,7 +9,7 @@ use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\OrderController;
-
+use App\Http\Controllers\admin\SearchUser;
 Route::get('/', function () {
     return view('admin/master_layout');
 });
@@ -29,8 +29,6 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
 
 
     Route::get('/orders/create', [OrderController::class, 'create'])->name('order.create');
-    Route::get('/api/products/search', [OrderController::class, 'searchProduct'])->name('api.products.search');
-    Route::get('/api/product/{id}/units', [OrderController::class, 'getUnits'])->name('api.product.units');
     Route::get('/api/product/{productId}/unit/{unitId}/inventories', [OrderController::class, 'getInventories'])->name('api.product.inventories');
     Route::post('/orders/store', [OrderController::class, 'store'])->name('order.store');
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
@@ -62,6 +60,9 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
     Route::put('/update_brand/{id}',    [BrandController::class, 'update'])->name('update_brand');
     Route::get('/delete_brand/{id}',    [BrandController::class, 'destroy'])->name('delete_brand');
     Route::get('/toggle_brand/{id}',    [BrandController::class, 'toggleActive'])->name('toggle_brand');
+
+
+    Route::get('/list_user', [SearchUser::class, 'index'])->name('list_user');
 
     Route::post('/inventory/import', [ProductController::class, 'importExcel']);
 });
