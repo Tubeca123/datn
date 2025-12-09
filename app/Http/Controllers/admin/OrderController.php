@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Models\User;
-
+use App\Models\OrderHistory;
+use App\Models\OrderDetailHistory;
 class OrderController extends Controller
 {
     public function create()
@@ -132,7 +133,13 @@ class OrderController extends Controller
                     'create_by' => Auth::user()->id,
                     'isactive' => 1
                 ]);
-
+                $history = OrderHistory::create([
+                    'order_id' => $order->id,
+                    'total' => $total,
+                    'create_date' => now(),
+                    'create_by' => Auth::id(),
+                    'isactive' => 1
+                ]);
                 // 4. Trừ tồn kho từ lô cụ thể
                 foreach ($items as $item) {
                     $inventory = Inventory::findOrFail($item['inventory_id']);
@@ -361,7 +368,7 @@ class OrderController extends Controller
                         // CẬP NHẬT item cũ
                         $detail = OrderDetail::findOrFail($item['detail_id']);
                         $oldQtyBase = $detail->quantity * max(1, $detail->productUnit->quantity_per_unit ?? 1);
-                        
+
                         // Tính chênh lệch
                         $qtyDifference = $neededBase - $oldQtyBase;
 
@@ -404,7 +411,7 @@ class OrderController extends Controller
                             'inventory_id' => $item['inventory_id'],
                             'quantity' => $item['quantity'],
                             'price' => $item['price'],
-                            
+
                         ]);
 
                         $updatedDetailIds[] = $detail->id;
@@ -486,9 +493,7 @@ class OrderController extends Controller
         }
     }
 
-    /**
-     * Xóa 1 sản phẩm khỏi đơn hàng
-     */
+
     public function deleteDetail($orderId, $detailId)
     {
         try {

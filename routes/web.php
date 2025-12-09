@@ -12,9 +12,18 @@ use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\SearchUser;
 
 Route::get('/', function () {
-    return view('admin/master_layout');
+    return view('users/pages/index');
 });
 
+Route::get('/shop', function () {
+    return view('users/pages/shop');
+});
+
+Route::get('/product', function () {
+    return view('users/pages/product');
+});
+
+// =======================================================================
 Route::get('/register', [UserController::class, 'register'])->name('register');
 Route::post('/register', [UserController::class, 'store'])->name('register.store');
 
