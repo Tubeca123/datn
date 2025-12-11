@@ -27,6 +27,7 @@ class Product extends Model
         'update_date',
         'update_by',
         'isactive',
+        'sold_count'
     ];
     public function images()
     {

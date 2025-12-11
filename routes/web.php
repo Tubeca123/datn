@@ -11,9 +11,10 @@ use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\SearchUser;
 
-Route::get('/', function () {
-    return view('users/pages/index');
-});
+use App\Http\Controllers\users\HomeController;
+
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/shop', function () {
     return view('users/pages/shop');
