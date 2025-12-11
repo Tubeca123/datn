@@ -160,10 +160,11 @@ class OrderController extends Controller
                         'code' => $inventory->code,
                         'product_unit_id' => $item['unit_id'],
                         'inventory_id' => $item['inventory_id'],
-                        'quantity' => $item['quantity'],  // ← Số lượng mà user yêu cầu
+                        'quantity' => $item['quantity'],  
                         'price' => $item['price'],
                         'isactive' => 1
                     ]);
+                    
                 }
 
                 return response()->json([

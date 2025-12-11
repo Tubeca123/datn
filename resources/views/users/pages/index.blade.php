@@ -11,14 +11,17 @@
 				<div class="col-xxl-12">
 					<!-- Hero Section -->
 					<section class="mn-hero swiper-container m-b-15">
+						{{-- <img src="{{asset('uploads/banner/default.png')}}" alt="hero-bg" class="mn-hero-bg"> --}}
 						<div class="mn-hero-slider owl-carousel">
 							<div class="mn-hero-slide swiper-slide slide-1">
-								<div class="mn-hero-detail">
-									<p class="label"><span>50%<br>Off</span></p>
-									<h1>Fashion sale <br>for women's</h1>
-									<p>Elevate your every day. Style that speaks volumes.</p>
-									<a href="javascript:void(0)" class="mn-btn-2"><span>Shop Now</span></a>
-								</div>
+								<a href="">
+									<img src="{{asset('uploads/banner/default.png')}}" style="width:100%; height:100%; object-fit:cover;" alt="hero-bg" class="mn-hero-bg">
+								</a>
+							</div>
+							<div class="mn-hero-slide swiper-slide slide-1">
+								<a href="">
+									<img src="{{asset('uploads/banner/default.png')}}" style="width:100%; height:100%; object-fit:cover;" alt="hero-bg" class="mn-hero-bg">
+								</a>
 							</div>
 						</div>
 					</section>
@@ -26,389 +29,73 @@
 					<!-- Category Section -->
 					<section class="mn-category p-tb-15">
 						<div class="mn-cat owl-carousel">
-							<div class="mn-cat-card cat-card-1">
+							@foreach($list_category as $category)
+								<div class="mn-cat-card cat-card-1">
 								<p class="lbl"><span>35%</span></p>
 								<span class="bg">35%</span>
-								<h4>Fashion</h4>
-								<h3>Clothes</h3>
-								<p>Items (16)</p>
+								<h4>{{$category->name}}</h4>
+								{{-- <h3>Clothes</h3> --}}
+								<p>sản phẩm ({{$category->count}})</p>
 								<ul>
-									<li><a href="shop-right-sidebar.html"><img src="assets/img/category/1.jpg"
+									@foreach($category->products_image as $img)
+										<li><a href="shop-right-sidebar.html"><img src="{{asset($img)}}"
 												alt="category"></a></li>
-									<li><a href="shop-right-sidebar.html"><img src="assets/img/category/2.jpg"
-												alt="category"></a></li>
-									<li><a href="shop-right-sidebar.html"><img src="assets/img/category/3.jpg"
-												alt="category"></a></li>
+									@endforeach
 								</ul>
 							</div>
+							@endforeach
+							
 						</div>
 					</section>
 
 					<!-- New Section -->
 					<section class="mn-new-product p-tb-15">
 						<div class="mn-title">
-							<h2>New <span>Arrivals</span></h2>
+							<h2>Sản Phẩm  <span>Bán Chạy</span></h2>
 						</div>
 						<div class="mn-product owl-carousel">
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="trending">trending</span>
+							@foreach ($list_product_sold_count as $product)
+								<div class="mn-product-card">
+									<div class="mn-product-img">
+										<div class="lbl">
+											<span class="new">new</span>
+										</div>
+										<div class="mn-img">
+											<a href="product-detail.html" class="image">
+												<img class="main-img" src="{{asset($product->images[0]->src ?? '')}}" alt="product">
+												<img class="hover-img" src="{{asset($product->images[1]->src ?? '')}}" alt="product">
+											</a>
+											<div class="mn-pro-loader"></div>
+											<div class="mn-options">
+												<ul>
+													<li><a href="javascript:void(0)"><i
+																class="ri-eye-line"></i></a></li>
+													<li><a href="javascript:void(0)" data-tooltip title="Compare"
+															class="mn-compare"><i class="ri-repeat-line"></i></a></li>
+													<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
+															class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
+													</li>
+												</ul>
+											</div>
+										</div>
 									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/5.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/6.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
+									<div class="mn-product-detail">
+										<div class="cat">
+											<a href="shop-right-sidebar.html">T-shirt</a>
 											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal">
-														<i class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
+												<li>s</li>
+												<li>m</li>
+												<li>xl</li>
 											</ul>
+										</div>
+										<h5><a href="index.html">Cotton fabric T-shirt</a></h5>
+										<div class="mn-price">
+											<div class="mn-price-new">$120</div>
+											<div class="mn-price-old">$130</div>
 										</div>
 									</div>
 								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">T-shirt</a>
-										<ul>
-											<li>s</li>
-											<li>m</li>
-											<li>xl</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Cotton fabric T-shirt</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$120</div>
-										<div class="mn-price-old">$130</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li class="active"><a href="index.html#" class="mn-opt-clr-img active"
-														data-src="assets/img/product/5.jpg"
-														data-src-hover="assets/img/product/5.jpg"
-														data-tooltip="Gray"><span
-															style="background-image:url('assets/img/product/bg/5.jpg');"></span></a>
-												</li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/6.jpg"
-														data-src-hover="assets/img/product/6.jpg"
-														data-tooltip="Orange"><span
-															style="background-image:url('assets/img/product/bg/6.jpg');"></span></a>
-												</li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/7.jpg"
-														data-src-hover="assets/img/product/7.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#e97e70;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/8.jpg"
-														data-src-hover="assets/img/product/8.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#70e98a;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							{{-- <div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/9.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/10.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">Shoes</a>
-										<ul>
-											<li>7</li>
-											<li>8</li>
-											<li>10</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Special sport shoes</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$55</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/9.jpg"
-														data-src-hover="assets/img/product/9.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#0e0e0e;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/10.jpg"
-														data-src-hover="assets/img/product/10.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#c54367;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist active" data-tooltip
-											title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="new">new</span>
-									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/1.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/3.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">Top</a>
-										<ul>
-											<li>s</li>
-											<li>m</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Cotton fabric Top</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$120</div>
-										<div class="mn-price-old">$130</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li class="active"><a href="index.html#" class="mn-opt-clr-img active"
-														data-src="assets/img/product/1.jpg"
-														data-src-hover="assets/img/product/3.jpg"
-														data-tooltip="Gray"><span
-															style="background-color:#f3f3f3;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/2.jpg"
-														data-src-hover="assets/img/product/4.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#e8c2ff;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="sale">sale</span>
-									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/11.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/12.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">watches</a>
-									</div>
-									<h5><a href="index.html">Mantu smart watch</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$955</div>
-										<div class="mn-price-old">$999</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/11.jpg"
-														data-src-hover="assets/img/product/12.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#f3f3f3;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/12.jpg"
-														data-src-hover="assets/img/product/11.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#242424;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="discount">20% off</span>
-									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/13.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/14.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">belt</a>
-									</div>
-									<h5><a href="index.html">Mantu leather belt</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$10</div>
-										<div class="mn-price-old">$12</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/13.jpg"
-														data-src-hover="assets/img/product/14.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#d48a5b;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/14.jpg"
-														data-src-hover="assets/img/product/13.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#242424;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/15.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/16.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">Bag</a>
-										<ul>
-											<li>m</li>
-											<li>l</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Leather bag</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$66</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/15.jpg"
-														data-src-hover="assets/img/product/16.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#b75956;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/16.jpg"
-														data-src-hover="assets/img/product/15.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#0e0e0e;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div> --}}
+							@endforeach
 						</div>
 					</section>
 
@@ -519,623 +206,58 @@
 						</div>
 					</section>
 
-					<!-- Banner slider -->
-					<section class="mn-banner p-tb-15">
-						<div class="row">
-							<div class="col-12" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
-								<div class="mn-modern-banner owl-carousel">
-									<div class="modern-banner">
-										<div class="mn-banner-img img-1"></div>
-										<div class="mn-banner-contact banner-animation">
-											<div class="inner-banner">
-												<h3>WOMEN'S</h3>
-												<h4>Fashion COLLECTION</h4>
-											</div>
-											<div class="inner-text">
-												<span class="bnr-text">Summer</span>
-												<p>New Stylish Shirts, Pants & Accessries.</p>
-											</div>
-											<div class="banner-btn">
-												<a href="https://maraviyainfotech.com/projects/mantu-html/room-details.html" class="mn-btn-1"><span>Book
-														Now</span></a>
-											</div>
-										</div>
-									</div>
-									<div class="modern-banner">
-										<div class="mn-banner-img img-2"></div>
-										<div class="mn-banner-contact banner-animation">
-											<div class="inner-banner">
-												<h3>WOMEN'S</h3>
-												<h4>goggles COLLECTION</h4>
-											</div>
-											<div class="inner-text">
-												<span class="bnr-text">Summer</span>
-												<p>New Stylish Shirts, Pants & Accessries.</p>
-											</div>
-											<div class="banner-btn">
-												<a href="https://maraviyainfotech.com/projects/mantu-html/room-details.html" class="mn-btn-1"><span>Book
-														Now</span></a>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</section>
-
 					<!-- Deal Section -->
 					<section class="mn-new-product p-tb-15">
 						<div class="mn-title mn-title-2">
 							<div class="mn-timer">
-								<h2>Day of the <span>Deals</span></h2>
-								<div class="timer1 timer dealend-timer" data-date="September 30, 2026 19:15:10 PDT">
-								</div>
+								<h2>Sản Phẩm <span>Mới</span></h2>
 							</div>
 						</div>
 						<div class="mn-product owl-carousel">
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="new">new</span>
+							@foreach ($list_product_new as $product)
+								<div class="mn-product-card">
+									<div class="mn-product-img">
+										<div class="lbl">
+											<span class="new">new</span>
+										</div>
+										<div class="mn-img">
+											<a href="product-detail.html" class="image">
+												<img class="main-img" src="{{asset($product->images[0]->src ?? '')}}" alt="product">
+												<img class="hover-img" src="{{asset($product->images[1]->src ?? '')}}" alt="product">
+											</a>
+											<div class="mn-pro-loader"></div>
+											<div class="mn-options">
+												<ul>
+													<li><a href="javascript:void(0)"><i
+																class="ri-eye-line"></i></a></li>
+													<li><a href="javascript:void(0)" data-tooltip title="Compare"
+															class="mn-compare"><i class="ri-repeat-line"></i></a></li>
+													<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
+															class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
+													</li>
+												</ul>
+											</div>
+										</div>
 									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/17.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/18.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
+									<div class="mn-product-detail">
+										<div class="cat">
+											<a href="shop-right-sidebar.html">T-shirt</a>
 											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
+												<li>s</li>
+												<li>m</li>
+												<li>xl</li>
 											</ul>
+										</div>
+										<h5><a href="index.html">Cotton fabric T-shirt</a></h5>
+										<div class="mn-price">
+											<div class="mn-price-new">$120</div>
+											<div class="mn-price-old">$130</div>
 										</div>
 									</div>
 								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">T-shirt</a>
-										<ul>
-											<li>s</li>
-											<li>m</li>
-											<li>xl</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Cotton fabric T-shirt</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$120</div>
-										<div class="mn-price-old">$130</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/19.jpg"
-														data-src-hover="assets/img/product/20.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#de8abc;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/21.jpg"
-														data-src-hover="assets/img/product/22.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#5e68ce;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/17.jpg"
-														data-src-hover="assets/img/product/18.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#eee;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							{{-- <div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="sale">Sale</span>
-									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/23.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/24.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">T-shirt</a>
-										<ul>
-											<li>s</li>
-											<li>m</li>
-											<li>xl</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Cotton fabric T-shirt</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$120</div>
-										<div class="mn-price-old">$130</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/19.jpg"
-														data-src-hover="assets/img/product/20.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#de8abc;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/23.jpg"
-														data-src-hover="assets/img/product/24.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#a14f3b;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="trending">trending</span>
-									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/5.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/6.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">T-shirt</a>
-										<ul>
-											<li>s</li>
-											<li>m</li>
-											<li>xl</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Cotton fabric T-shirt</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$120</div>
-										<div class="mn-price-old">$130</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li class="active"><a href="index.html#" class="mn-opt-clr-img active"
-														data-src="assets/img/product/5.jpg"
-														data-src-hover="assets/img/product/5.jpg"
-														data-tooltip="Gray"><span
-															style="background-image:url('assets/img/product/bg/5.jpg');"></span></a>
-												</li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/6.jpg"
-														data-src-hover="assets/img/product/6.jpg"
-														data-tooltip="Orange"><span
-															style="background-image:url('assets/img/product/bg/6.jpg');"></span></a>
-												</li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/7.jpg"
-														data-src-hover="assets/img/product/7.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#e97e70;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/8.jpg"
-														data-src-hover="assets/img/product/8.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#70e98a;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/9.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/10.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">Shoes</a>
-										<ul>
-											<li>7</li>
-											<li>8</li>
-											<li>10</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Special sport shoes</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$55</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/9.jpg"
-														data-src-hover="assets/img/product/9.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#0e0e0e;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/10.jpg"
-														data-src-hover="assets/img/product/10.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#c54367;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist active" data-tooltip
-											title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="new">new</span>
-									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/1.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/3.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">Top</a>
-										<ul>
-											<li>s</li>
-											<li>m</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Cotton fabric Top</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$120</div>
-										<div class="mn-price-old">$130</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li class="active"><a href="index.html#" class="mn-opt-clr-img active"
-														data-src="assets/img/product/1.jpg"
-														data-src-hover="assets/img/product/3.jpg"
-														data-tooltip="Gray"><span
-															style="background-color:#f3f3f3;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/2.jpg"
-														data-src-hover="assets/img/product/4.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#e8c2ff;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="sale">sale</span>
-									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/11.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/12.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">watches</a>
-									</div>
-									<h5><a href="index.html">Mantu smart watch</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$955</div>
-										<div class="mn-price-old">$999</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/11.jpg"
-														data-src-hover="assets/img/product/12.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#f3f3f3;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/12.jpg"
-														data-src-hover="assets/img/product/11.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#242424;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="lbl">
-										<span class="discount">20% off</span>
-									</div>
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/13.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/14.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">belt</a>
-									</div>
-									<h5><a href="index.html">Mantu leather belt</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$10</div>
-										<div class="mn-price-old">$12</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/13.jpg"
-														data-src-hover="assets/img/product/14.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#d48a5b;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/14.jpg"
-														data-src-hover="assets/img/product/13.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#242424;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div>
-							<div class="mn-product-card">
-								<div class="mn-product-img">
-									<div class="mn-img">
-										<a href="product-detail.html" class="image">
-											<img class="main-img" src="assets/img/product/15.jpg" alt="product">
-											<img class="hover-img" src="assets/img/product/16.jpg" alt="product">
-										</a>
-										<div class="mn-pro-loader"></div>
-										<div class="mn-options">
-											<ul>
-												<li><a href="javascript:void(0)" data-tooltip title="Quick View"
-														data-link-action="quickview" data-bs-toggle="modal"
-														data-bs-target="#quickview_modal"><i
-															class="ri-eye-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Compare"
-														class="mn-compare"><i class="ri-repeat-line"></i></a></li>
-												<li><a href="javascript:void(0)" data-tooltip title="Add To Cart"
-														class="mn-add-cart"><i class="ri-shopping-cart-line"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								<div class="mn-product-detail">
-									<div class="cat">
-										<a href="shop-right-sidebar.html">Bag</a>
-										<ul>
-											<li>m</li>
-											<li>l</li>
-										</ul>
-									</div>
-									<h5><a href="index.html">Leather bag</a></h5>
-									<div class="mn-price">
-										<div class="mn-price-new">$66</div>
-									</div>
-									<div class="mn-pro-option">
-										<div class="mn-pro-color">
-											<ul class="mn-opt-swatch mn-change-img">
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/15.jpg"
-														data-src-hover="assets/img/product/16.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#b75956;"></span></a></li>
-												<li><a href="index.html#" class="mn-opt-clr-img"
-														data-src="assets/img/product/16.jpg"
-														data-src-hover="assets/img/product/15.jpg"
-														data-tooltip="Orange"><span
-															style="background-color:#0e0e0e;"></span></a></li>
-											</ul>
-										</div>
-										<a href="javascript:void(0);" class="mn-wishlist" data-tooltip title="Wishlist">
-											<i class="ri-heart-line"></i>
-										</a>
-									</div>
-								</div>
-							</div> --}}
-						</div>
-					</section>
-
-					<!-- Testimonials Section -->
-					<section class="mn-testimonials p-tb-15">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="testim-bg">
-									<div class="section-title d-none">
-										<h2>Customers <span>Review</span></h2>
-									</div>
-									<div class="mn-test-outer mn-testimonials">
-										<ul class="mn-testimonial-slider owl-carousel">
-											<li class="mn-test-item">
-												<img src="assets/img/icons/top-quotes.svg" class="svg_img test_svg top"
-													alt="user">
-												<div class="mn-test-inner">
-													<div class="mn-test-img">
-														<img alt="testimonial" title="testimonial"
-															src="assets/img/user/1.jpg">
-													</div>
-													<div class="mn-test-content">
-														<div class="mn-test-desc">Lorem Ipsum is simply dummy text of
-															the printing and industry. Lorem Ipsum has been the
-															industry's standard dummy text ever since the 1500s.</div>
-														<div class="mn-test-name">Mariya Klinton</div>
-														<div class="mn-test-designation">(CEO)</div>
-													</div>
-												</div>
-												<img src="assets/img/icons/bottom-quotes.svg"
-													class="svg_img test_svg bottom" alt="">
-											</li>
-											<li class="mn-test-item ">
-												<img src="assets/img/icons/top-quotes.svg" class="svg_img test_svg top"
-													alt="">
-												<div class="mn-test-inner">
-													<div class="mn-test-img">
-														<img alt="testimonial" title="testimonial"
-															src="assets/img/user/2.jpg">
-													</div>
-													<div class="mn-test-content">
-														<div class="mn-test-desc">Standard dummy text ever since the
-															1500s, when an unknown printer took a galley of type and
-															this is the lorem and scrambled it to make a type specimen.
-														</div>
-														<div class="mn-test-name">John Doe</div>
-														<div class="mn-test-designation">(CFO)</div>
-													</div>
-												</div>
-												<img src="assets/img/icons/bottom-quotes.svg"
-													class="svg_img test_svg bottom" alt="">
-											</li>
-											<li class="mn-test-item">
-												<img src="assets/img/icons/top-quotes.svg" class="svg_img test_svg top"
-													alt="">
-												<div class="mn-test-inner">
-													<div class="mn-test-img">
-														<img alt="testimonial" title="testimonial"
-															src="assets/img/user/3.jpg">
-													</div>
-													<div class="mn-test-content">
-														<div class="mn-test-desc">When an unknown printer took a galley
-															of type and scrambled it to make a type specimen Lorem Ipsum
-															has been the industry's and ever since to the 1500s, </div>
-														<div class="mn-test-name">Nency Lykra</div>
-														<div class="mn-test-designation">(Manager)</div>
-													</div>
-												</div>
-												<img src="assets/img/icons/bottom-quotes.svg"
-													class="svg_img test_svg bottom" alt="">
-											</li>
-										</ul>
-									</div>
-									<span class="mn-testi-shape-2"></span>
-								</div>
-							</div>
+							@endforeach
+							
+							
 						</div>
 					</section>
 
@@ -1145,99 +267,105 @@
 							<h2>Our <span>Blogs</span></h2>
 						</div>
 						<div class="mn-blog-carousel owl-carousel">
-							<div class="mn-blog-card">
-								<div class="blog-info">
-									<figure class="blog-img"><a href="index.html#"><img src="assets/img/blog/1.jpg"
-												alt="news imag"></a>
-									</figure>
-									<div class="detail">
-										<label>June 30, 2025 - <a href="index.html#">Fashion</a></label>
-										<h3><a href="index.html#">Marketing Guide: 5 Steps to Success to way.</a></h3>
-										<div class="more-info">
-											<a href="blog-detail-right-sidebar.html">Read More<i
-													class="ri-arrow-right-double-line"></i></a>
+							@foreach ($news as $new)
+								<div class="mn-blog-card">
+									<div class="blog-info">
+										<figure class="blog-img"><a href="index.html#"><img src="{{asset($new->image)}}"
+													alt="news imag"></a>
+										</figure>
+										<div class="detail">
+											<label>{{ $new->create_at->format('d/m/Y') }}<a href="index.html#">{{$new->categories->name}}</a></label>
+											<h3><a href="index.html#">{{asset($new->name)}}</a></h3>
+											<div class="more-info">
+												<a href="blog-detail-right-sidebar.html">Read More<i
+														class="ri-arrow-right-double-line"></i></a>
+											</div>
 										</div>
 									</div>
-								</div>
-							</div>
-							{{-- <div class="mn-blog-card">
-								<div class="blog-info">
-									<figure class="blog-img"><a href="index.html#"><img src="assets/img/blog/2.jpg"
-												alt="news imag"></a>
-									</figure>
-									<div class="detail">
-										<label>April 02, 2025 - <a href="index.html#">Shoes</a></label>
-										<h3><a href="index.html#">Best way to solve business issue in market.</a>
-										</h3>
-										<div class="more-info">
-											<a href="blog-detail-right-sidebar.html">Read More<i
-													class="ri-arrow-right-double-line"></i></a>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="mn-blog-card">
-								<div class="blog-info">
-									<figure class="blog-img"><a href="index.html#"><img src="assets/img/blog/3.jpg"
-												alt="news imag"></a>
-									</figure>
-									<div class="detail">
-										<label>Mar 09, 2025 - <a href="index.html#">Grocery</a></label>
-										<h3><a href="index.html#">31 grocery customer service stats know in 2025.</a></h3>
-										<div class="more-info">
-											<a href="blog-detail-right-sidebar.html">Read More<i
-													class="ri-arrow-right-double-line"></i></a>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="mn-blog-card">
-								<div class="blog-info">
-									<figure class="blog-img"><a href="index.html#"><img src="assets/img/blog/4.jpg"
-												alt="news imag"></a>
-									</figure>
-									<div class="detail">
-										<label>January 25, 2025 - <a href="index.html#">Bags</a></label>
-										<h3><a href="index.html#">Business ideas to grow your business traffic.</a></h3>
-										<div class="more-info">
-											<a href="blog-detail-right-sidebar.html">Read More<i
-													class="ri-arrow-right-double-line"></i></a>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="mn-blog-card">
-								<div class="blog-info">
-									<figure class="blog-img"><a href="index.html#"><img src="assets/img/blog/5.jpg"
-												alt="news imag"></a>
-									</figure>
-									<div class="detail">
-										<label>December 10, 2026 - <a href="index.html#">Cosmetics</a></label>
-										<h3><a href="index.html#">Marketing Guide: 5 Steps way to Success.</a></h3>
-										<div class="more-info">
-											<a href="blog-detail-right-sidebar.html">Read More<i
-													class="ri-arrow-right-double-line"></i></a>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="mn-blog-card">
-								<div class="blog-info">
-									<figure class="blog-img"><a href="index.html#"><img src="assets/img/blog/6.jpg"
-												alt="news imag"></a>
-									</figure>
-									<div class="detail">
-										<label>August 08, 2027 - <a href="index.html#">Bags</a></label>
-										<h3><a href="index.html#">15 customer service stats idea know in 2026.</a></h3>
-										<div class="more-info">
-											<a href="blog-detail-right-sidebar.html">Read More<i
-													class="ri-arrow-right-double-line"></i></a>
-										</div>
-									</div>
-								</div>
-							</div> --}}
+								</div> 
+							@endforeach
 						</div>
 					</section>
+					{{-- <!-- Quick view Modal -->
+					<div class="modal fade quickview-modal" id="quickview_modal" tabindex="-1" role="dialog">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<button type="button" class="qty-close" data-bs-dismiss="modal" aria-label="Close"
+									title="Close"></button>
+								<div class="modal-body">
+									<div class="row mb-minus-24">
+										<div class="col-md-5 col-sm-12 col-xs-12 mb-24">
+											<div class="single-pro-img single-pro-img-no-sidebar">
+												<div class="single-product-scroll">
+													<div class="single-slide-quickview owl-carousel">
+														<img class="img-responsive" src="assets/img/product/1.jpg"
+															alt="product-img-1">
+														<img class="img-responsive" src="assets/img/product/2.jpg"
+															alt="product-img-1">
+														<img class="img-responsive" src="assets/img/product/3.jpg"
+															alt="product-img-1">
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-7 col-sm-12 col-xs-12 mb-24">
+											<div class="quickview-pro-content">
+												<h5 class="mn-quick-title">
+													<a href="product-detail.html">Best cotton fabric women's half sleeve
+														T-shirt white color.</a>
+												</h5>
+												<div class="mn-pro-rating">
+													<i class="ri-star-fill"></i>
+													<i class="ri-star-fill"></i>
+													<i class="ri-star-fill"></i>
+													<i class="ri-star-fill"></i>
+													<i class="ri-star-fill grey"></i>
+												</div>
+												<div class="mn-quickview-desc">Lorem Ipsum is simply dummy text of the printing and
+													typesetting industry. Lorem Ipsum has been the industry's standard dummy text
+													ever
+													since the 1900s.</div>
+												<div class="mn-quickview-price">
+													<span class="new-price">$50.00</span>
+													<span class="old-price">$62.00</span>
+												</div>
+												<div class="mn-pro-variations">
+													<ul>
+														<li class="active">
+															<a href="javascript:void(0)" class="mn-opt-sz"
+																data-tooltip="Small">s</a>
+														</li>
+														<li>
+															<a href="javascript:void(0)" class="mn-opt-sz"
+																data-tooltip="Medium">m</a>
+														</li>
+														<li>
+															<a href="javascript:void(0)" class="mn-opt-sz"
+																data-tooltip="Large">l</a>
+														</li>
+														<li>
+															<a href="javascript:void(0)" class="mn-opt-sz"
+																data-tooltip="Extra Large">xl</a>
+														</li>
+													</ul>
+												</div>
+												<div class="mn-quickview-qty">
+													<div class="qty-plus-minus">
+														<input class="qty-input" type="text" name="mn-qtybtn" value="1">
+													</div>
+													<div class="mn-quickview-cart">
+														<a href="cart.html" class="mn-btn-1">
+															<span><i class="ri-shopping-bag-line"></i>Add To Cart</span>
+														</a>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> --}}
 				</div>
 			</div>
 		</div>
