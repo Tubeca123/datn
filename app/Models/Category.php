@@ -19,7 +19,8 @@ class Category extends Model
         'update_date',
         'update_by',
         'isactive',
-        "parent_id"
+        "parent_id",
+        "image"
     ];
     protected $primaryKey = 'id';
     protected $table = 'categories';

@@ -210,49 +210,160 @@
                 </div>
 
                 <!-- Lịch sử thay đổi -->
-                @if($order->update_date)
                 <div class="card mt-4 no-print">
                     <div class="card-header bg-warning">
                         <h5 class="mb-0"><i class="fas fa-history"></i> Lịch sử thay đổi</h5>
                     </div>
                     <div class="card-body">
                         <div class="timeline">
+                            <!-- Nếu đơn hàng bị hủy, hiển thị sự kiện hủy -->
+                            @if($order->isactive == 0 && $order->update_date)
                             <div class="timeline-item">
-                                <div class="timeline-marker @if($order->isactive == 0) bg-danger @else bg-info @endif"></div>
+                                <div class="timeline-marker bg-danger"></div>
                                 <div class="timeline-content">
-                                    <p class="mb-0">
+                                    <p class="mb-1">
                                         <strong>
-                                            @if($order->isactive == 0)
-                                                Đơn hàng đã bị hủy
-                                            @else
-                                                Đơn hàng đã được cập nhật
-                                            @endif
+                                            <i class="fas fa-times-circle"></i> Đơn hàng bị hủy
                                         </strong>
                                     </p>
-                                    <small class="text-muted">
+                                    <small class="text-muted d-block">
                                         {{ \Carbon\Carbon::parse($order->update_date)->format('d/m/Y H:i:s') }}
                                         @if($order->update_by)
-                                        - Bởi: {{ App\Models\User::find($order->update_by)->name ?? 'N/A' }}
+                                        <br>Bởi: <strong>{{ App\Models\User::find($order->update_by)->name ?? 'N/A' }}</strong>
                                         @endif
                                     </small>
                                 </div>
                             </div>
+                            @endif
+
+                            <!-- Hiển thị lịch sử cập nhật từ OrderHistory -->
+                            @forelse($history as $h)
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-info"></div>
+                                <div class="timeline-content">
+                                    <p class="mb-1">
+                                        <strong>
+                                            <i class="fas fa-sync-alt"></i> Cập nhật đơn hàng
+                                            @if($h->total)
+                                                - Tổng: <span class="text-success">{{ number_format($h->total, 0, ',', '.') }} đ</span>
+                                            @endif
+                                        </strong>
+                                    </p>
+                                    <small class="text-muted d-block mb-2">
+                                        {{ \Carbon\Carbon::parse($h->create_date)->format('d/m/Y H:i:s') }}
+                                        @if($h->creator)
+                                        <br>Bởi: <strong>{{ $h->creator->name }}</strong>
+                                        @endif
+                                    </small>
+
+                                    @if($h->details && $h->details->count() > 0)
+                                    <div class="table-responsive mt-2">
+                                        <table class="table table-sm table-bordered mb-0" style="font-size: 0.85rem;">
+                                            <thead class="bg-light">
+                                                <tr>
+                                                    <th>Sản phẩm</th>
+                                                    <th class="text-center">Đơn vị</th>
+                                                    <th class="text-center">Số lượng</th>
+                                                    <th class="text-right">Đơn giá</th>
+                                                    <th class="text-right">Thành tiền</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($h->details as $detail)
+                                                <tr>
+                                                    <td>
+                                                        <strong>{{ $detail->product->name ?? 'N/A' }}</strong>
+                                                        <br><small class="text-muted">Lô: {{ $detail->code ?? 'N/A' }}</small>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <small>{{ $detail->productUnit?->unit?->name ?? 'N/A' }}</small>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>{{ number_format($detail->quantity, 2) }}</strong>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        {{ number_format($detail->price, 0, ',', '.') }} đ
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <strong>{{ number_format($detail->quantity * $detail->price, 0, ',', '.') }} đ</strong>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @empty
+                            @endforelse
+
+                            <!-- Hiển thị sự kiện tạo đơn -->
                             <div class="timeline-item">
                                 <div class="timeline-marker bg-success"></div>
                                 <div class="timeline-content">
-                                    <p class="mb-0">
-                                        <strong>Đơn hàng được tạo</strong>
+                                    <p class="mb-1">
+                                        <strong>
+                                            <i class="fas fa-plus-circle"></i> Đơn hàng được tạo
+                                            - Tổng: <span class="text-success">{{ number_format($history->isEmpty() ? $order->total : $history->last()->total, 0, ',', '.') }} đ</span>
+                                        </strong>
                                     </p>
-                                    <small class="text-muted">
+                                    <small class="text-muted d-block mb-2">
                                         {{ \Carbon\Carbon::parse($order->create_date)->format('d/m/Y H:i:s') }}
-                                        - Bởi: {{ App\Models\User::find($order->create_by)->name ?? 'N/A' }}
+                                        @if($order->create_by)
+                                        <br>Bởi: <strong>{{ App\Models\User::find($order->create_by)->name ?? 'N/A' }}</strong>
+                                        @endif
                                     </small>
+
+                                    @php
+                                        // Lấy chi tiết từ lịch sử đầu tiên hoặc từ order details hiện tại
+                                        $firstHistory = $history->last();
+                                        $creationDetails = $firstHistory ? $firstHistory->details : $order->details;
+                                    @endphp
+
+                                    @if($creationDetails && $creationDetails->count() > 0)
+                                    <div class="table-responsive mt-2">
+                                        <table class="table table-sm table-bordered mb-0" style="font-size: 0.85rem;">
+                                            <thead class="bg-light">
+                                                <tr>
+                                                    <th>Sản phẩm</th>
+                                                    <th class="text-center">Đơn vị</th>
+                                                    <th class="text-center">Số lượng</th>
+                                                    <th class="text-right">Đơn giá</th>
+                                                    <th class="text-right">Thành tiền</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($creationDetails as $detail)
+                                                <tr>
+                                                    <td>
+                                                        <strong>{{ $detail->product->name ?? 'N/A' }}</strong>
+                                                        <br><small class="text-muted">Lô: {{ $detail->code ?? 'N/A' }}</small>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <small>{{ $detail->productUnit?->unit?->name ?? 'N/A' }}</small>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <strong>{{ number_format($detail->quantity, 2) }}</strong>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        {{ number_format($detail->price, 0, ',', '.') }} đ
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <strong>{{ number_format($detail->quantity * $detail->price, 0, ',', '.') }} đ</strong>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                @endif
+                
             </div>
         </div>
 
