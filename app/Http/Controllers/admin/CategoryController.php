@@ -14,12 +14,12 @@ class CategoryController extends Controller
     {
         $query = Category::query();
         
-        // Filter theo position (cha/con)
+        
         if ($request->has('position') && $request->position != '') {
             $query->where('position', $request->position);
         }
         
-        // Filter theo trạng thái
+        
         if ($request->has('isactive') && $request->isactive != '') {
             $query->where('isactive', $request->isactive);
         }

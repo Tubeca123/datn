@@ -1,128 +1,121 @@
 @extends('admin.master_layout')
 
 @section('page_content')
-    <div class="content-wrapper">
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">         
-                        <ol class="breadcrumb float-sm-left">
-                            <li class="breadcrumb-item"><a href="" class="text-info">Quản lý Slide</a></li>
-                            <li class="breadcrumb-item active">Thêm mới banner</li>
-                        </ol>               
-                    </div>
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-left">
+                        <li class="breadcrumb-item"><a href="/admin/list_banner" class="text-info">Quản lý Banner</a></li>
+                        <li class="breadcrumb-item active">Thêm mới banner</li>
+                    </ol>
                 </div>
             </div>
-            @if ($errors->any())
-                <div style="position: fixed; top: 70px; right: 16px; width: auto; z-index: 999" id="myAlert">
-                    @foreach ($errors->all() as $error)
-                        <div class="alert alert-danger" role="alert">
-                            <i class="bi bi-check2 text-danger"></i> {{ $error }}
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </section>
+        </div>
 
-        <section class="content">
-            <div class="container-fluid">
-                <div class="row">                   
-                    <div class="col-md-12">
-                        <div class="card card-info">
-                            <div class="card-header">
-                                <h3 class="card-title">Điền các trường dữ liệu</h3>                               
+        @if ($errors->any())
+        <div style="position: fixed; top: 70px; right: 16px; width: auto; z-index: 999" id="myAlert">
+            @foreach ($errors->all() as $error)
+            <div class="alert alert-danger" role="alert">
+                <i class="bi bi-check2 text-danger"></i> {{ $error }}
+            </div>
+            @endforeach
+        </div>
+        @endif
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="card card-info shadow-sm">
+                        <div class="card-header bg-white">
+                            <h3 class="card-title">Điền các trường dữ liệu</h3>
+                        </div>
+
+                        <form action="{{ route('store_banner') }}" method="POST" enctype="multipart/form-data" class="p-3">
+                            @csrf
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Tiêu đề <span class="text-danger">*</span></label>
+                                <input type="text" name="content" class="form-control" required>
                             </div>
-                            <form method="post" action="{{route("store_banner")}}" id="quickForm">
-                                @csrf
-                                <div class="card-body">                                                               
-                                    <div class="row">
-                                        <div class="col-md-4 d-flex justify-content-center align-items-center">
-                                            <div class="form-group text-center mt-2">
-                                                <img id="holder" src="" style="width:320px; height:220px;" class="mx-auto d-block mb-4" />
-                                                <span class="input-group-btn mr-2">
-                                                    <a id="lfm" data-input="thumbnail" data-preview="holder" class="btn btn-info">
-                                                        <i class="fa-solid fa-image"></i> Chọn ảnh
-                                                    </a>
-                                                </span>
-                                                <input id="thumbnail" class="form-control" type="hidden" name="image" value="{{ old('image') }}">                                                                             
-                                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Đường dẫn</label>
+                                <textarea name="link" class="form-control" rows="2"></textarea>
+                            </div>
+
+                            <!-- ===== Image dropzone (reusable) ===== -->
+                            <div class="mb-3 js-image-dropzone">
+                                <label class="form-label fw-semibold">Hình ảnh</label>
+
+                                <div class="border rounded d-flex align-items-center justify-content-between p-3 drop-area"
+                                     data-drop
+                                     style="cursor:pointer; gap:16px;">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="d-flex align-items-center justify-content-center" style="width:56px;height:56px;border-radius:50%;background:#f8f9ff;border:1px solid #e9ecef;">
+                                            <!-- icon -->
+                                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 3v10" stroke="#6c757d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M5 13l7-7 7 7" stroke="#6c757d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M21 21H3" stroke="#6c757d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
                                         </div>
-                                        <div class="col-md-8">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label>Tiêu đề</label>
-                                                        <input type="text" name="content" value="{{ old('content') }}" class="form-control" placeholder="Nhập tiêu đề">
+
+                                        <div>
+                                            <div class="fw-medium">Kéo &amp; thả ảnh vào đây</div>
+                                            <div class="text-muted small drop-hint" data-hint>Chấp nhận: JPG, PNG, GIF — tối đa 5MB</div>
+                                            <div class="text-muted small mt-1">Gợi ý: tỉ lệ 16:9 hoặc kích thước 1200×675 để banner hiển thị tốt.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-end">
+                                        <button type="button" class="btn btn-outline-primary btn-sm btn-choose" data-choose>Chọn ảnh</button>
+                                    </div>
+
+                                    <!-- input file (ẩn) -->
+                                    <input type="file" name="image" class="d-none" data-input accept="image/*">
+                                </div>
+
+                                <!-- preview -->
+                                <div class="mt-3 image-preview" data-preview style="display:none;">
+                                    <div class="card shadow-sm" style="max-width:680px;">
+                                        <div class="row g-0 align-items-center">
+                                            <div class="col-auto p-3">
+                                                <img class="rounded preview-img" data-preview-img src="" alt="Preview" style="width:160px;height:90px;object-fit:cover;border:1px solid #e9ecef;">
+                                            </div>
+                                            <div class="col">
+                                                <div class="card-body py-3">
+                                                    <h6 class="card-title mb-1 file-name" data-filename></h6>
+                                                    <p class="card-text small text-muted mb-2 file-info" data-fileinfo></p>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove" data-remove>Xoá</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary btn-change" data-change>Thay ảnh</button>
                                                     </div>
                                                 </div>
-                                                
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label>Liên kết</label>
-                                                        <input type="text" name="link" value="{{ old('link') }}" class="form-control"  >
-                                                    </div>
-                                                </div>
-                                                                        
                                             </div>
                                         </div>
-                                    </div>                                                                                                                                                                                                               
+                                    </div>
                                 </div>
-                                <div class="card-footer">
-                                    <a href="{{route('list_banner')}}" class="btn btn-warning"><i class="fa-solid fa-rotate-left" style="color:white" title="Quay lại"></i></a>
-                                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk" title="Lưu"></i></button>
-                                </div>
-                            </form>
-                        </div>
+
+                                <div class="form-text text-muted mt-2">Kích thước tối đa: 5MB. Định dạng: JPG, PNG, GIF.</div>
+                            </div>
+
+                            <div class="mt-4 text-end">
+                                <button class="btn btn-success">Lưu</button>
+                            </div>
+                        </form>
+
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
-@endsection
-@section('scripts')
-    <script src="{{asset("assets/plugins/jquery-validation/jquery.validate.min.js")}}"></script>
-    <script src="{{asset("assets/plugins/jquery-validation/additional-methods.min.js")}}"></script>
-    <script src="{{asset("assets/plugins/select2/js/select2.full.min.js")}}"></script>
-    <script src="{{asset("assets/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js")}}"></script>
+        </div>
+    </section>
+</div>
 
-    <script>
-        $(function () {
-            $('#quickForm').validate({
-                rules: {
-                    order: {
-                        required: true,
-                        min: 1
-                    },
-                    description: {
-                        maxlength: 255
-                    }
-                },
-                messages: {
-                    order: {
-                        required: "Thứ tự sắp xếp không được để trống",
-                        min: "Thứ tự sắp xếp phải lớn hơn hoặc bằng {0}!"
-                    },
-                    description: {
-                        maxlength: "Mô tả thêm tối đa {0} ký tự!"
-                    }
-                },
-                errorElement: 'span',
-                errorPlacement: function (error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function (element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function (element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
-                }
-            });
-
-            $('.select2').select2()
-            $('.select2bs4').select2({
-                theme: 'bootstrap4'
-            })
-        });
-    </script>
 @endsection
+
+<!-- include reusable script -->
+<script src="{{ asset('js/image-dropzone.js') }}"></script>

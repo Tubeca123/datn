@@ -24,11 +24,11 @@
                 <div class="border rounded p-3 d-flex align-items-center justify-content-between drop-area"
                     data-drop style="cursor:pointer; background: linear-gradient(180deg,#fff 0%,#fbfbfd 100%);">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="d-flex align-items-center justify-content-center rounded-circle border"
-                            style="width:56px;height:56px;background:#f8f9ff;">
-                            <!-- icon -->
-                            <!-- ... svg ... -->
-                        </div>
+                        <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width:56px;height:56px;background:#f8f9ff;"> <!-- simple icon --> <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 3v10" stroke="#6c757d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M5 13l7-7 7 7" stroke="#6c757d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M21 21H3" stroke="#6c757d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg> </div>
                         <div>
                             <div class="fw-medium">Kéo thả ảnh vào đây hoặc</div>
                             <div class="text-muted small drop-hint" data-hint>Chấp nhận: JPG, PNG, GIF — tối đa 5MB</div>
@@ -122,23 +122,6 @@
         toggleParentSelect();
     });
 
-    function previewImage(input) {
-        const preview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('previewImg');
-
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                preview.style.display = 'block';
-            }
-
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            preview.style.display = 'none';
-        }
-    }
     
 </script>
 <script src="{{ asset('js/image-dropzone.js') }}"></script>

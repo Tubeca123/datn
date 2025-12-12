@@ -283,6 +283,12 @@
                     <p>Banner</p>
                   </a>
                 </li>
+                <li class="nav-item">
+                  <a href="/admin/list_banner" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Bài viết</p>
+                  </a>
+                </li>
               </ul>
             </li>
             <li class="nav-item">
@@ -309,30 +315,7 @@
 
               </ul>
             </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-edit"></i>
-                <p>
-                  Tài khoản khách hàng
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="{{ route('list_user') }}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Danh sách tài khoản </p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="{{route('create_user')}}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Thêm mới tài khoản</p>
-                  </a>
-                </li>
-
-              </ul>
-            </li>
+            
 
             <li class="nav-header">LABELS</li>
             <li class="nav-item">

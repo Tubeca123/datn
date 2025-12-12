@@ -12,9 +12,10 @@ use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\SearchUser;
 
-Route::get('/', function () {
-    return view('users/pages/index');
-});
+use App\Http\Controllers\users\HomeController;
+
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/shop', function () {
     return view('users/pages/shop');
@@ -89,6 +90,10 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
     Route::get('/list_banner', [BannerController::class, 'index'])->name('list_banner');
     Route::get('/create_banner', [BannerController::class, 'create'])->name('create_banner');
     Route::post('/store_banner', [BannerController::class, 'store'])->name('store_banner');
+    Route::get('/edit_banner/{id}', [BannerController::class, 'edit'])->name('edit_banner');
+    Route::post('/update_banner/{id}', [BannerController::class, 'update'])->name('update_banner');
+    Route::get('/delete_banner/{id}', [BannerController::class, 'destroy'])->name('delete_banner');
+    Route::get('/toggle_banner/{id}', [BannerController::class, 'toggleActive'])->name('toggle_banner');
 
     Route::post('/inventory/import', [ProductController::class, 'importExcel']);
 });

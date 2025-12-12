@@ -161,7 +161,7 @@ class OrderController extends Controller
                         'code' => $inventory->code,
                         'product_unit_id' => $item['unit_id'],
                         'inventory_id' => $item['inventory_id'],
-                        'quantity' => $item['quantity'],  // ← Số lượng mà user yêu cầu
+                        'quantity' => $item['quantity'],  
                         'price' => $item['price'],
                         'isactive' => 1
                     ]);
@@ -194,16 +194,13 @@ class OrderController extends Controller
     {
         $query = Order::query();
 
-        // Filter theo trạng thái
         $status = $request->get('status', 'active');
         if ($status === 'active') {
             $query->where('isactive', 1);
         } elseif ($status === 'cancelled') {
             $query->where('isactive', 0);
         }
-        // Nếu status == 'all', không filter gì
 
-        // Filter theo ngày
         if ($request->filled('date_from')) {
             $query->whereDate('create_date', '>=', $request->date_from);
         }
