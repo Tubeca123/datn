@@ -8,11 +8,12 @@ class News_category extends Model
 {
     use HasFactory;
 
-    protected $table = 'News_category';
+    protected $table = 'news_categories';
     protected $primaryKey = 'id';
     public $timestamps = false;
 
     protected $fillable = [
+        'name',
         'description',
         'create_date',
         'create_by',

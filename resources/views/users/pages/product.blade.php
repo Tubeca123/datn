@@ -12,13 +12,13 @@
 					<div class="col-12">
 						<div class="row gi_breadcrumb_inner">
 							<div class="col-md-6 col-sm-12">
-								<h2 class="mn-breadcrumb-title">Product Page</h2>
+								<h2 class="mn-breadcrumb-title">Trang sản phẩm</h2>
 							</div>
 							<div class="col-md-6 col-sm-12">
 								<!-- mn-breadcrumb-list start -->
 								<ul class="mn-breadcrumb-list">
-									<li class="mn-breadcrumb-item"><a href="index.html">Home</a></li>
-									<li class="mn-breadcrumb-item active">Product Page</li>
+									<li class="mn-breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+									<li class="mn-breadcrumb-item active">Sản phẩm</li>
 								</ul>
 								<!-- mn-breadcrumb-list end -->
 							</div>

@@ -12,13 +12,13 @@
 					<div class="col-12">
 						<div class="row gi_breadcrumb_inner">
 							<div class="col-md-6 col-sm-12">
-								<h2 class="mn-breadcrumb-title">Login Page</h2>
+								<h2 class="mn-breadcrumb-title">Trang đăng nhập</h2>
 							</div>
 							<div class="col-md-6 col-sm-12">
 								<!-- mn-breadcrumb-list start -->
 								<ul class="mn-breadcrumb-list">
-									<li class="mn-breadcrumb-item"><a href="index.html">Home</a></li>
-									<li class="mn-breadcrumb-item active">Login Page</li>
+									<li class="mn-breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+									<li class="mn-breadcrumb-item active">Đăng nhập</li>
 								</ul>
 								<!-- mn-breadcrumb-list end -->
 							</div>
@@ -29,37 +29,34 @@
 
 			<!-- Login section -->
 			<section class="mn-login p-b-15">
-				<div class="mn-title d-none">
-					<h2>Login<span></span></h2>
-					<p>Get access to your Orders, Wishlist and Recommendations.</p>
-				</div>
 				<div class="mn-login-content">
 					<div class="mn-login-box">
 						<div class="mn-login-wrapper">
 							<div class="mn-login-container">
 								<div class="mn-login-form">
-									<form action="login.html#" method="post">
+									<form action="{{route('handle_user_login')}}" method="post">
+										@csrf
 										<span class="mn-login-wrap">
-											<label>Email Address*</label>
-											<input type="text" name="name" placeholder="Enter your email add..."
+											<label>Email</label>
+											<input type="text" name="email" placeholder="Nhập email tại đây"
 												required>
 										</span>
 										<span class="mn-login-wrap">
-											<label>Password*</label>
-											<input type="password" name="password" placeholder="Enter your password"
+											<label>Mật khẩu</label>
+											<input type="password" name="password" placeholder="Nhập mật"
 												required>
 										</span>
 										<span class="mn-login-wrap mn-login-fp">
 											<span class="mn-remember">
-												<input type="checkbox" value="">
-												Remember
+												<input type="checkbox" name="checkbox">
+												Nhớ đăng nhập
 												<span class="checked"></span>
 											</span>
-											<label><a href="login.html#">Forgot Password?</a></label>
+											<label><a href="login.html#">Quên mật khẩu?</a></label>
 										</span>
 										<span class="mn-login-wrap mn-login-btn">
-											<span><a href="register.html" class="">Create Account?</a></span>
-											<button class="mn-btn-1 btn" type="submit"><span>Login</span></button>
+											<span><a href="{{route('register')}}" class="">Tạo tài khoản?</a></span>
+											<button class="mn-btn-1 btn" type="submit"><span>Đăng nhập</span></button>
 										</span>
 									</form>
 								</div>

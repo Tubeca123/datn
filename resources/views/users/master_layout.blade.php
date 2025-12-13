@@ -48,7 +48,6 @@ Copyright 2025
 				<span class="shape"></span>
 			</div>
 		</div>
-
 		<!-- Sidebar -->
 		<div class="mn-sidebar-overlay"></div>
 		<div class="mn-sidebar">
@@ -92,7 +91,6 @@ Copyright 2025
 							@else
 								<li class="mn-sb-item sb-drop-item">
 									<a href="javascript:void(0)" class="mn-drop-toggle">
-										{{-- <img src="https://png.pngtree.com/png-clipart/20210912/original/pngtree-pills-medicine-capsules-png-image_6722284.jpg" alt=""> --}}
 										<img src="{{ $child->image ? asset('uploads/category/' . $child->image) : 'https://png.pngtree.com/png-clipart/20210912/original/pngtree-pills-medicine-capsules-png-image_6722284.jpg' }}" alt="">
 										<span class="condense">
 											{{ $child->name }}
@@ -115,80 +113,6 @@ Copyright 2025
 						@endforeach
 					@endforeach
 					
-					
-					{{-- <li class="mn-sb-item sb-drop-item">
-						<a href="shop-right-sidebar.html" class="mn-drop-toggle">
-							<img src="assets/img/icons/shoes.svg" alt="clothes">
-							<span class="condense">Shoes</span>
-						</a>
-					</li>
-					<li class="mn-sb-item sb-drop-item">
-						<a href="javascript:void(0)" class="mn-drop-toggle">
-							<img src="assets/img/icons/bag.svg" alt="bag">
-							<span class="condense">Bags<i class="drop-arrow ri-arrow-down-s-line"></i></span>
-						</a>
-						<ul class="mn-sb-drop">
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">Purse</a>
-							</li>
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">Bags</a>
-							</li>
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">wallet</a>
-							</li>
-						</ul>
-					</li>
-					<li class="mn-sb-item sb-drop-item">
-						<a href="shop-right-sidebar.html" class="mn-drop-toggle">
-							<img src="assets/img/icons/hat.svg" alt="hat">
-							<span class="condense">Hat</span>
-						</a>
-					</li>
-					<li class="mn-sb-item sb-drop-item">
-						<a href="javascript:void(0)" class="mn-drop-toggle">
-							<img src="assets/img/icons/makeup.svg" alt="makeup">
-							<span class="condense">Makeup<i class="drop-arrow ri-arrow-down-s-line"></i></span>
-						</a>
-						<ul class="mn-sb-drop">
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">Lipstick</a>
-							</li>
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">eye liner</a>
-							</li>
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">nail paint</a>
-							</li>
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">Makeup kit</a>
-							</li>
-						</ul>
-					</li>
-					<li class="mn-sb-item sb-drop-item">
-						<a href="javascript:void(0)" class="mn-drop-toggle">
-							<img src="assets/img/icons/cosmetics.svg" alt="cosmetics">
-							<span class="condense">Cosmetics<i class="drop-arrow ri-arrow-down-s-line"></i></span>
-						</a>
-						<ul class="mn-sb-drop">
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">Shampoo</a>
-							</li>
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">face wash</a>
-							</li>
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">body wash</a>
-							</li>
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">sunscreen</a>
-							</li>
-							<li class="list">
-								<a href="shop-right-sidebar.html" class="mn-page-link drop">serum</a>
-							</li>
-						</ul>
-					</li> --}}
-					
 				</ul>
 			</div>
 		</div>
@@ -203,7 +127,7 @@ Copyright 2025
 								<span class="inner-ring"></span>
 							</span>
 						</a>
-						<a href="index.html" class="logo"><img src="assets/img/logo/logo.png" alt="logo"></a>
+						<a href="{{route('home')}}" class="logo"><img src="assets/img/logo/logo.png" alt="logo"></a>
 						<a href="javascript:void(0)" class="mn-toggle-menu">
 							<div class="header-icon">
 								<i class="ri-menu-3-fill"></i>
@@ -219,31 +143,29 @@ Copyright 2025
 										<div class="mn-main-menu">
 											<ul>
 												<li class="non-drop">
-													<a href="index.html">Trang chủ</a>
+													<a href="{{route('home')}}">Trang chủ</a>
 												</li>
 												<li class="dropdown drop-list">
-													<a href="javascript:void(0)" class="dropdown-arrow">Cửa hàng<i
+													<a href="{{route('shop')}}" class="dropdown-arrow">Cửa hàng<i
 															class="ri-arrow-down-s-line"></i></a>
 													<ul class="mega-menu d-block">
 														<li class="d-flex">
 															<span class="bg"></span>
-															<ul class="d-block mega-block">
-																<li class="menu_title"><a
-																		href="javascript:void(0)">Thuốc</a></li>
-																<li><a href="shop-right-sidebar.html">Shop Right
-																		sidebar</a></li>
-															</ul>
-															<ul class="d-block mega-block">
-																<li class="menu_title"><a
-																		href="javascript:void(0)">Thực phẩm chức năng</a></li>
-																<li><a href="shop-list-right-sidebar.html">Shop Right
-																		sidebar</a></li>
-															</ul>
+															@foreach($main_category->where('parent_id', 0)->take(2) as $parent)
+																<ul class="d-block mega-block">
+																	<li class="menu_title"><a
+																			href="{{route('shop')}}">{{$parent->name}}</a></li>
+																	@foreach($main_category->where('parent_id', $parent->id) as $child)
+																		<li><a href="{{route('shop')}}">{{$child->name}}</a></li>
+																	@endforeach
+																	
+																</ul>
+															@endforeach
 														</li>
 													</ul>
 												</li>
 												<li class="non-drop">
-													<a href="index.html">Giới thiệu</a>
+													<a href="{{route('about')}}">Giới thiệu</a>
 												</li>
 												
 												<li class="dropdown drop-list">
@@ -251,25 +173,21 @@ Copyright 2025
 															class="ri-arrow-down-s-line"></i></a>
 													<ul class="sub-menu">
 														<li class="dropdown position-static">
-															<a href="javascript:void(0)" class="mn-sub-drop">Blog
+															<a href="{{route('blog')}}" class="mn-sub-drop">Blog
 																<i class="ri-arrow-down-s-line"></i></a>
 															<ul class="sub-menu sub-menu-child">
-																<li><a href="blog-right-sidebar.html">right sidebar</a>
-																</li>
-																<li><a href="blog-full-width.html">Full Width</a></li>
-																<li><a href="blog-detail-right-sidebar.html">Detail
-																		right sidebar</a></li>
-																<li><a href="blog-detail-full-width.html">Detail Full
-																		Width</a></li>
+																@foreach($main_new_category as $new_cat)
+																	<li><a href="blog-right-sidebar.html">{{$new_cat->name}}</a></li>
+																@endforeach
 															</ul>
 														</li>
-														<li><a href="about-us.html">About Us</a></li>
-														<li><a href="contact-us.html">Contact Us</a></li>
-														<li><a href="cart.html">Cart</a></li>
-														<li><a href="checkout.html">Checkout</a></li>
-														<li><a href="compare.html">Compare</a></li>
-														<li><a href="faq.html">FAQ</a></li>
-														<li><a href="login.html">Login</a></li>
+														<li><a href="{{route('about')}}">About Us</a></li>
+														<li><a href="{{route('contact')}}">Contact Us</a></li>
+														<li><a href="{{route('cart')}}">Cart</a></li>
+														<li><a href="{{route('checkout')}}">Checkout</a></li>
+														<li><a href="{{route('compare')}}">Compare</a></li>
+														<li><a href="{{route('faq')}}">FAQ</a></li>
+														<li><a href="{{route('user_login')}}">Login</a></li>
 													</ul>
 												</li>
 											</ul>
@@ -404,16 +322,22 @@ Copyright 2025
 										</path>
 									</svg>
 								</a>
-								<ul class="sub-menu">
-									<li>
-										<a href="login.html">Login</a>
-									</li>
-									<li>
-										<a href="register.html">Register</a>
-									</li>
-									<li>
-										<a href="checkout.html">Checkout</a>
-									</li>
+								<ul class="sub-menu" style='width:250px'>
+									@if(Auth::check())
+										<li>
+											<a href="#" >Hello, {{ Auth::user()->name }}</a>
+										</li>
+										<li>
+											<a href="{{ route('user_logout') }}">Logout</a>
+										</li>
+									@else
+										<li>
+											<a href="{{route('user_login')}}">Login</a>
+										</li>
+										<li>
+											<a href="{{route('user_register')}}">Register</a>
+										</li>
+									@endif
 								</ul>
 							</div>
 							<div class="mn-tool-wish">
@@ -445,6 +369,25 @@ Copyright 2025
 					</div>
 				</div>
 			</div>
+			{{-- Thông báo thành công --}}
+			@if(session('success'))
+				<div class="alert alert-success">
+					{{ session('success') }}
+				</div>
+			@endif
+
+			{{-- Thông báo lỗi --}}
+			@if(session('error'))
+				<div class="alert alert-danger">
+					{{ session('error') }}
+				</div>
+			@endif
+
+			<script>
+				setTimeout(() => {
+					document.querySelectorAll('.alert').forEach(el => el.remove());
+				}, 8000);
+			</script>
 		</header>
 
 		@yield('content')
@@ -714,7 +657,7 @@ Copyright 2025
 						<a href="javascript:void(0)"><i class="ri-search-line"></i></a>
 					</form>
 				</div>
-				<div class="mn-search-list">
+				{{-- <div class="mn-search-list">
 					<ul class="mn-search-pro-items">
 						<li class="search-sidebar-list">
 							<a href="product-detail.html" class="mn-pro-img"><img src="assets/img/product/9.jpg"
@@ -782,7 +725,7 @@ Copyright 2025
 						<li><a href="shop-right-sidebar.html">Bags</a></li>
 						<li><a href="shop-right-sidebar.html">Belts</a></li>
 					</ul>
-				</div>
+				</div> --}}
 			</div>
 		</div>
 
