@@ -23,4 +23,5 @@ class Banner extends Model
     protected $primaryKey = 'id';
     protected $table = 'banner';
     public $timestamps = false;
+
 }

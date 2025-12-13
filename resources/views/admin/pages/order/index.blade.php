@@ -42,8 +42,19 @@
                         <label class="mr-2">Đến ngày:</label>
                         <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
                     </div>
+                    <div class="form-group mr-3">
+                        <label class="mr-2">Trạng thái:</label>
+                        <select name="status" class="form-control">
+                            <option value="active" {{ request('status', 'active') == 'active' ? 'selected' : '' }}>Đang hoạt động</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                            <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Tất cả</option>
+                        </select>
+                    </div>
                     
-                    <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                    <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary ml-2">
                         <i class="fas fa-redo"></i> Làm mới
                     </a>
                 </form>
@@ -87,13 +98,18 @@
                                         </a>
                                         
                                         @if($order->isactive == 1)
+                                            <a href="{{ route('edit_order', $order->id) }}" class="btn btn-sm btn-warning" title="Sửa đơn">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
                                             <button type="button" class="btn btn-sm btn-danger cancel-order-btn" 
                                                     data-order-id="{{ $order->id }}" 
                                                     title="Hủy đơn">
                                                 <i class="fas fa-times"></i>
                                             </button>
                                         @else
-                                            <span class="badge badge-secondary">Đã hủy</span>
+                                            <span class="badge badge-danger">
+                                                <i class="fas fa-ban"></i> Đã hủy
+                                            </span>
                                         @endif
                                     </td>
                                 </tr>

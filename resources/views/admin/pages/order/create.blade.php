@@ -1,98 +1,155 @@
 @extends('admin.master_layout')
-
 @section('page_content')
 <div class="content-wrapper">
-    <div class="container mt-4">
-
-        <h3>Tạo Đơn Thuốc</h3>
-
-        <!-- Alert for messages -->
-        <div id="alertBox" class="alert" style="display:none" role="alert"></div>
-
-        <!-- Search Product -->
-        <div class="form-group mt-3">
-            <label>Tìm thuốc:</label>
-            <div class="input-group">
-                <input type="text" id="search" class="form-control" placeholder="Nhập tên thuốc...">
-                <div class="input-group-append">
-                    <span id="searchSpinner" class="input-group-text" style="display:none">
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    </span>
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-left">
+                        <li class="breadcrumb-item"><a href="" class="text-info">Quản lý đơn thuốc</a>
+                        </li>
+                        <li class="breadcrumb-item active text-secondary">Tạo đơn thuốc</li>
+                    </ol>
                 </div>
             </div>
-            <div id="searchResult" class="list-group mt-1" style="display:none" role="listbox"></div>
         </div>
-        <div class="mt-4">
-            <label>Số điện thoại khách:</label>
-            <input type="text" id="customerPhone" class="form-control" placeholder="Nhập SĐT khách hàng...">
 
-            <small id="customerInfo" class="text-primary mt-1" style="font-weight:bold;"></small>
-        </div>
-        <!-- Product detail selection -->
-        <div id="productArea" class="mt-4" style="display:none">
-            <h5 id="productName"></h5>
-            <input type="hidden" id="currentProductId">
-
+    </section>
+    <section class="content">
+        <div class="container-fluid">
             <div class="row">
-                <div class="col-md-6">
-                    <label>Đơn vị thuốc:</label>
-                    <select id="unitSelect" class="form-control"></select>
-                </div>
+                <div class="col-md-12">
+                    <div class="card p-3">
 
-                <div class="col-md-6">
-                    <label>Chọn lô thuốc:</label>
-                    <select id="inventorySelect" class="form-control"></select>
-                    <small id="inventoryInfo" class="text-muted"></small>
+                        <!-- Alert for messages -->
+                        <div id="alertBox" class="alert" style="display:none" role="alert"></div>
+
+                        <!-- Search Product -->
+                        <div class="form-group mt-2">
+                            <label>Tìm thuốc:</label>
+                            <div class="input-group">
+                                <input type="text" id="search" class="form-control" placeholder="Nhập tên thuốc...">
+                                <div class="input-group-append">
+                                    <span id="searchSpinner" class="input-group-text" style="display:none">
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="searchResult" class="list-group mt-1" style="display:none" role="listbox"></div>
+                        </div>
+                        <div class="mt-4">
+                            <label>Số điện thoại khách:</label>
+                            <div class="input-group">
+                                <input type="text" id="customerPhone" class="form-control" placeholder="Nhập SĐT khách hàng...">
+                                <button id="openAddUserModal" class="btn btn-outline-primary" type="button">Thêm khách hàng</button>
+                            </div>
+                            <small id="customerInfo" class="text-primary mt-1" style="font-weight:bold;"></small>
+                        </div>
+                        <!-- Product detail selection -->
+                        <div id="productArea" class="mt-4" style="display:none">
+                            <h5 id="productName"></h5>
+                            <input type="hidden" id="currentProductId">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Đơn vị thuốc:</label>
+                                    <select id="unitSelect" class="form-control"></select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Chọn lô thuốc:</label>
+                                    <select id="inventorySelect" class="form-control"></select>
+                                    <small id="inventoryInfo" class="text-muted"></small>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <label>Số lượng:</label>
+                                    <input type="number" id="quantity" class="form-control" value="1" min="0.01" step="0.01">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Giá bán:</label>
+                                    <input type="text" id="price" class="form-control" readonly>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Tồn kho của lô:</label>
+                                    <input type="text" id="stock" class="form-control" readonly>
+                                </div>
+                            </div>
+
+                            <button id="addBtn" class="btn btn-primary mt-3">Thêm vào đơn</button>
+
+
+                        </div>
+
+                        <hr>
+
+                        <!-- Order Table -->
+                        <h4>Chi tiết Đơn Thuốc</h4>
+                        <table class="table table-bordered" id="orderTable">
+                            <thead>
+                                <tr>
+                                    <th>Thuốc</th>
+                                    <th>Đơn vị</th>
+                                    <th>SL</th>
+                                    <th>Giá</th>
+                                    <th>Tổng</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+
+                        <h4 class="mt-3">Tổng tiền: <span id="total">0</span> VNĐ</h4>
+
+                        <button id="saveOrder" class="btn btn-success mt-3">
+                            <span id="saveSpinner" class="spinner-border spinner-border-sm" role="status" style="display:none"></span>
+                            Tạo đơn thuốc
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <div class="row mt-3">
-                <div class="col-md-4">
-                    <label>Số lượng:</label>
-                    <input type="number" id="quantity" class="form-control" value="1" min="0.01" step="0.01">
-                </div>
-
-                <div class="col-md-4">
-                    <label>Giá bán:</label>
-                    <input type="text" id="price" class="form-control" readonly>
-                </div>
-
-                <div class="col-md-4">
-                    <label>Tồn kho của lô:</label>
-                    <input type="text" id="stock" class="form-control" readonly>
-                </div>
-            </div>
-
-            <button id="addBtn" class="btn btn-primary mt-3">Thêm vào đơn</button>
-
-
         </div>
+    </section>
+</div>
 
-        <hr>
 
-        <!-- Order Table -->
-        <h4>Chi tiết Đơn Thuốc</h4>
-        <table class="table table-bordered" id="orderTable">
-            <thead>
-                <tr>
-                    <th>Thuốc</th>
-                    <th>Đơn vị</th>
-                    <th>SL</th>
-                    <th>Giá</th>
-                    <th>Tổng</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-
-        <h4 class="mt-3">Tổng tiền: <span id="total">0</span> VNĐ</h4>
-
-        <button id="saveOrder" class="btn btn-success mt-3">
-            <span id="saveSpinner" class="spinner-border spinner-border-sm" role="status" style="display:none"></span>
-            Tạo đơn thuốc
-        </button>
-
+<!-- Modal Thêm Khách Hàng -->
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Thêm Khách Hàng Mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="addUserAlert" class="alert" style="display:none" role="alert"></div>
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label for="userName">Tên khách hàng <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="userName" name="name" required placeholder="Nhập tên khách hàng">
+                        <small class="text-danger" id="userNameError" style="display:none"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPhone">Số điện thoại <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="userPhone" name="phone" required placeholder="Nhập số điện thoại">
+                        <small class="text-danger" id="userPhoneError" style="display:none"></small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="saveUserBtn">
+                    <span id="saveUserSpinner" class="spinner-border spinner-border-sm" role="status" style="display:none"></span>
+                    Lưu
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -242,24 +299,24 @@
         if (!productId || !unitId) return;
 
         fetch(`/admin/api/product/${productId}/unit/${unitId}/inventories`, {
-            credentials: 'same-origin'
-        })
-        .then(r => r.json())
-        .then(inventories => {
-            let html = '<option value="">-- Chọn lô --</option>';
-            inventories.forEach(inv => {
-                const label = `Lô ${inv.code} - Hạn: ${inv.date_end} (${inv.stock_units} cái)`;
-                html += `<option value="${inv.id}" data-stock-units="${inv.stock_units}" data-stock-base="${inv.stock_base}" data-remainder="${inv.remainder}">${label}</option>`;
+                credentials: 'same-origin'
+            })
+            .then(r => r.json())
+            .then(inventories => {
+                let html = '<option value="">-- Chọn lô --</option>';
+                inventories.forEach(inv => {
+                    const label = `Lô ${inv.code} - Hạn: ${inv.date_end} (${inv.stock_units} cái)`;
+                    html += `<option value="${inv.id}" data-stock-units="${inv.stock_units}" data-stock-base="${inv.stock_base}" data-remainder="${inv.remainder}">${label}</option>`;
+                });
+                el('inventorySelect').innerHTML = html;
+                el('inventorySelect').value = '';
+                updateStockDisplay();
+            })
+            .catch(err => {
+                console.error('Inventories error', err);
+                showAlert('Lỗi tải danh sách lô', 'danger');
+                el('inventorySelect').innerHTML = '<option value="">-- Lỗi tải lô --</option>';
             });
-            el('inventorySelect').innerHTML = html;
-            el('inventorySelect').value = '';
-            updateStockDisplay();
-        })
-        .catch(err => {
-            console.error('Inventories error', err);
-            showAlert('Lỗi tải danh sách lô', 'danger');
-            el('inventorySelect').innerHTML = '<option value="">-- Lỗi tải lô --</option>';
-        });
     });
 
     el('inventorySelect').addEventListener('change', function() {
@@ -323,16 +380,16 @@
 
         const total = qty * price;
 
-        
+
         const itemData = {
             product_id: productId,
             unit_id: unitId,
-            inventory_id: inventoryId,  
+            inventory_id: inventoryId,
             quantity: qty,
             price: price,
             product_name: productName,
             unit_name: unitText,
-            inventory_code: inventoryCode.split(' - ')[0],  
+            inventory_code: inventoryCode.split(' - ')[0],
             total: total,
             quantity_per_unit: unit.quantity_per_unit
         };
@@ -343,13 +400,13 @@
         const itemIndex = orderItems.length - 1;
         tr.setAttribute('data-item-index', itemIndex);
         tr.innerHTML = `
-            <td>${escapeHtml(productName)}</td>
-            <td>${escapeHtml(inventoryCode.split(' - ')[0])}<br><small class="text-muted">${escapeHtml(unitText)}</small></td>
-            <td>${qty}</td>
-            <td>${formatCurrency(price)}</td>
-            <td>${formatCurrency(total)}</td>
-            <td><button class="btn btn-danger btn-sm removeBtn">Xóa</button></td>
-        `;
+                <td>${escapeHtml(productName)}</td>
+                <td>${escapeHtml(inventoryCode.split(' - ')[0])}<br><small class="text-muted">${escapeHtml(unitText)}</small></td>
+                <td>${qty}</td>
+                <td>${formatCurrency(price)}</td>
+                <td>${formatCurrency(total)}</td>
+                <td><button class="btn btn-danger btn-sm removeBtn">Xóa</button></td>
+            `;
 
         const removeBtn = tr.querySelector('.removeBtn');
         removeBtn.addEventListener('click', function() {
@@ -474,6 +531,119 @@
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
     }
-</script>
 
+    // Xử lý modal thêm khách hàng
+    el('openAddUserModal').addEventListener('click', function() {
+        // Reset form
+        el('addUserForm').reset();
+        el('addUserAlert').style.display = 'none';
+        el('userNameError').style.display = 'none';
+        el('userPhoneError').style.display = 'none';
+
+        // Lấy số điện thoại từ input nếu có
+        const currentPhone = el('customerPhone').value.trim();
+        if (currentPhone) {
+            el('userPhone').value = currentPhone;
+        }
+
+        // Mở modal (sử dụng jQuery nếu có, hoặc vanilla JS)
+        if (typeof $ !== 'undefined') {
+            $('#addUserModal').modal('show');
+        } else {
+            // Fallback nếu không có jQuery
+            const modal = document.getElementById('addUserModal');
+            modal.style.display = 'block';
+            modal.classList.add('show');
+            document.body.classList.add('modal-open');
+        }
+    });
+
+    // Xử lý submit form thêm khách hàng
+    el('saveUserBtn').addEventListener('click', function() {
+        const name = el('userName').value.trim();
+        const phone = el('userPhone').value.trim();
+
+        // Reset errors
+        el('userNameError').style.display = 'none';
+        el('userPhoneError').style.display = 'none';
+        el('addUserAlert').style.display = 'none';
+
+        // Validation
+        if (!name) {
+            el('userNameError').textContent = 'Tên khách hàng là bắt buộc';
+            el('userNameError').style.display = 'block';
+            return;
+        }
+
+        if (!phone) {
+            el('userPhoneError').textContent = 'Số điện thoại là bắt buộc';
+            el('userPhoneError').style.display = 'block';
+            return;
+        }
+
+        // Disable button và hiện spinner
+        this.disabled = true;
+        el('saveUserSpinner').style.display = 'inline-block';
+
+        // Gửi request
+        fetch('/admin/api/user/create', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    phone: phone
+                })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    // Đóng modal
+                    if (typeof $ !== 'undefined') {
+                        $('#addUserModal').modal('hide');
+                    } else {
+                        const modal = document.getElementById('addUserModal');
+                        modal.style.display = 'none';
+                        modal.classList.remove('show');
+                        document.body.classList.remove('modal-open');
+                    }
+
+                    // Cập nhật số điện thoại và trigger search
+                    el('customerPhone').value = phone;
+                    el('customerPhone').dispatchEvent(new Event('input'));
+
+                    showAlert('Thêm khách hàng thành công!', 'success');
+                } else {
+                    // Hiển thị lỗi
+                    if (res.errors) {
+                        if (res.errors.name) {
+                            el('userNameError').textContent = res.errors.name[0];
+                            el('userNameError').style.display = 'block';
+                        }
+                        if (res.errors.phone) {
+                            el('userPhoneError').textContent = res.errors.phone[0];
+                            el('userPhoneError').style.display = 'block';
+                        }
+                    } else {
+                        el('addUserAlert').className = 'alert alert-danger';
+                        el('addUserAlert').textContent = res.message || 'Có lỗi xảy ra khi thêm khách hàng';
+                        el('addUserAlert').style.display = 'block';
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Create user error', err);
+                el('addUserAlert').className = 'alert alert-danger';
+                el('addUserAlert').textContent = 'Lỗi khi thêm khách hàng';
+                el('addUserAlert').style.display = 'block';
+            })
+            .finally(() => {
+                el('saveUserBtn').disabled = false;
+                el('saveUserSpinner').style.display = 'none';
+            });
+    });
+</script>
 @endsection

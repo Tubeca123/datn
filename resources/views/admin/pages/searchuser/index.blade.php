@@ -17,24 +17,31 @@
             </div>
 
             <!-- Filter -->
-            <form method="GET" class="mb-3">
+            <form method="GET" class="mb-3" id="filterForm">
                 <div class="row">
                     <div class="col-md-4">
                         <label>Trạng thái:</label>
-                        <select name="status" class="form-control" onchange="this.form.submit()">
-                            <option value="">-- Tất cả --</option>
+                        <select name="status" class="form-control" id="statusFilter">
                             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Đang hoạt động</option>
                             <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Bị khóa</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label>Loại tài khoản:</label>
-                        <select name="role" class="form-control" onchange="this.form.submit()">
-                            <option value="">-- Tất cả --</option>
-                            @foreach($roles as $role)
-                            <option value="{{ $role->id }}" {{ request('role') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
+                        <select name="role" class="form-control" id="roleFilter">
+                            @foreach($roles as $roleItem)
+                            <option value="{{ $roleItem->id }}"
+                                {{ (int) $role == $roleItem->id ? 'selected' : '' }}>
+                                {{ $roleItem->name }}
+                            </option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-primary form-control" id="applyFilterBtn">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
                     </div>
                 </div>
             </form>
@@ -74,17 +81,29 @@
                                         </td>
                                         <td>
                                             <a href=" {{ route('orders_user_show', $user->id) }}" class="btn btn-sm btn-info" title="Xem chi tiết">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fas fa-eye"></i> Xem đơn
                                             </a>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm toggleStatus" data-user-id="{{ $user->id }}" data-status="{{ $user->isactive }}">
+                                            <button type="button" class="btn btn-sm toggleStatus"
+                                                data-user-id="{{ $user->id }}"
+                                                title="{{ $user->isactive ? 'Khóa tài khoản' : 'Mở khóa tài khoản' }}">
                                                 @if($user->isactive)
-                                                <span class="badge bg-success">Đang hoạt động</span>
+                                                <i class="fas fa-lock"></i> Khóa
                                                 @else
-                                                <span class="badge bg-secondary">Bị khóa</span>
+                                                <i class="fas fa-unlock"></i> Mở khóa
                                                 @endif
                                             </button>
+
+                                        </td>
+                                        <td>
+                                            @if($user->isactive)
+                                            <span class="badge badge-success">
+                                                <i class="fas fa-check-circle"></i> Đang hoạt động
+                                            </span>
+                                            @else
+                                            <span class="badge badge-danger">
+                                                <i class="fas fa-ban"></i> Bị khóa
+                                            </span>
+                                            @endif
                                         </td>
                                     </tr>
                                     @empty
@@ -116,8 +135,13 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        $('#example2').DataTable({
+        // Khởi tạo DataTable với cấu hình cơ bản
+        let table = $('#example2').DataTable({
             pageLength: 10,
+            ordering: true,
+            searching: true,
+            paging: true,
+            info: true,
             language: {
                 lengthMenu: "Hiển thị _MENU_ dòng",
                 search: "Tìm kiếm:",
@@ -134,29 +158,88 @@
             }
         });
 
-        // Handle toggle status button
+        // Xử lý filter button
+        $('#applyFilterBtn').on('click', function() {
+            $('#filterForm').submit();
+        });
+
+        $('#statusFilter, #roleFilter').on('change', function() {});
+
+        // Handle toggle status button với SweetAlert2
         $(document).on('click', '.toggleStatus', function() {
             const userId = $(this).data('user-id');
             const btn = $(this);
-            
-            fetch(`/admin/api/user/${userId}/toggle-status`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            const isActive = btn.closest('tr').find('.badge-success').length > 0;
+            const action = isActive ? 'khóa' : 'mở khóa';
+            const actionText = isActive ? 'Khóa' : 'Mở khóa';
+
+            // SweetAlert Confirm Dialog
+            Swal.fire({
+                title: `${actionText} tài khoản?`,
+                text: `Bạn có chắc chắn muốn ${action} tài khoản này?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: isActive ? '#dc3545' : '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: ` ${action}!`,
+                cancelButtonText: 'Hủy',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Disable button while processing
+                    btn.prop('disabled', true);
+                    const originalText = btn.html();
+                    btn.html('<i class="fas fa-spinner fa-spin"></i> Đang xử lý...');
+
+                    // AJAX Request
+                    fetch(`/admin/api/user/${userId}/toggle-status`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Success Alert
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#28a745',
+                                    confirmButtonText: 'OK',
+                                    timer: 2000,
+                                    timerProgressBar: true
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                // Error Alert
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: data.message || 'Không thể cập nhật trạng thái',
+                                    icon: 'error',
+                                    confirmButtonColor: '#dc3545',
+                                    confirmButtonText: 'OK'
+                                });
+                                btn.prop('disabled', false);
+                                btn.html(originalText);
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error:', err);
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Lỗi khi cập nhật trạng thái',
+                                icon: 'error',
+                                confirmButtonColor: '#dc3545',
+                                confirmButtonText: 'OK'
+                            });
+                            btn.prop('disabled', false);
+                            btn.html(originalText);
+                        });
                 }
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                alert('Lỗi khi cập nhật trạng thái');
             });
         });
     });

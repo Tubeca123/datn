@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\BannerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\RoleController;
@@ -86,11 +87,20 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
 
     Route::get('/list_user', [SearchUser::class, 'index'])->name('list_user');
     Route::get('/api/user/{userId}/detail', [SearchUser::class, 'getDetail'])->name('api.user.detail');
-    Route::post('/api/user/{userId}/toggle-status', [SearchUser::class, 'toggleStatus'])->name('api.user.toggle');
     Route::get('/create_user', [SearchUser::class, 'create'])->name('create_user');
     Route::post('/store_user', [SearchUser::class, 'store'])->name('store_user');
+    Route::post('/api/user/create', [SearchUser::class, 'createUser'])->name('api.user.create');
     Route::get('/oder_user/{id}', [SearchUser::class, 'show'])->name('orders_user_show');
     Route::get('/api/user/{userId}/orders', [SearchUser::class, 'getDetail'])->name('api.user.orders');
+    Route::post('/api/user/{userId}/toggle-status', [SearchUser::class, 'toggleStatus']);
+
+    Route::get('/list_banner', [BannerController::class, 'index'])->name('list_banner');
+    Route::get('/create_banner', [BannerController::class, 'create'])->name('create_banner');
+    Route::post('/store_banner', [BannerController::class, 'store'])->name('store_banner');
+    Route::get('/edit_banner/{id}', [BannerController::class, 'edit'])->name('edit_banner');
+    Route::post('/update_banner/{id}', [BannerController::class, 'update'])->name('update_banner');
+    Route::get('/delete_banner/{id}', [BannerController::class, 'destroy'])->name('delete_banner');
+    Route::get('/toggle_banner/{id}', [BannerController::class, 'toggleActive'])->name('toggle_banner');
 
     Route::post('/inventory/import', [ProductController::class, 'importExcel']);
 });

@@ -14,6 +14,7 @@ use Exception;
 use App\Models\User;
 use App\Models\OrderHistory;
 use App\Models\OrderDetailHistory;
+
 class OrderController extends Controller
 {
     public function create()
@@ -137,7 +138,7 @@ class OrderController extends Controller
                     'order_id' => $order->id,
                     'total' => $total,
                     'create_date' => now(),
-                    'create_by' => Auth::id(),
+                    'create_by' => Auth::user()->id,
                     'isactive' => 1
                 ]);
                 // 4. Trừ tồn kho từ lô cụ thể
@@ -164,7 +165,15 @@ class OrderController extends Controller
                         'price' => $item['price'],
                         'isactive' => 1
                     ]);
-                    
+                    OrderDetailHistory::create([
+                        'order_history_id' => $history->id,
+                        'product_id' => $item['product_id'],
+                        'inventory_id' => $item['inventory_id'],
+                        'code' => $inventory->code,
+                        'product_unit_id' => $item['unit_id'],
+                        'price' => $item['price'],
+                        'quantity' => $item['quantity']
+                    ]);
                 }
 
                 return response()->json([
@@ -183,9 +192,15 @@ class OrderController extends Controller
     }
     public function index(Request $request)
     {
-        $query = Order::where('isactive', 1);
+        $query = Order::query();
 
-        // Filter theo ngày
+        $status = $request->get('status', 'active');
+        if ($status === 'active') {
+            $query->where('isactive', 1);
+        } elseif ($status === 'cancelled') {
+            $query->where('isactive', 0);
+        }
+
         if ($request->filled('date_from')) {
             $query->whereDate('create_date', '>=', $request->date_from);
         }
@@ -193,8 +208,6 @@ class OrderController extends Controller
         if ($request->filled('date_to')) {
             $query->whereDate('create_date', '<=', $request->date_to);
         }
-
-
 
         $orders = $query->orderBy('create_date', 'desc')
             ->paginate(20)
@@ -226,7 +239,13 @@ class OrderController extends Controller
             return $detail->quantity * $detail->getPrice();
         });
 
-        return view('admin.pages.order.show', compact('order', 'totalItems', 'totalQuantity', 'calculatedTotal'));
+        // Lấy lịch sử đơn hàng (với chi tiết sản phẩm)
+        $history = OrderHistory::with(['details.product', 'details.productUnit.unit', 'creator'])
+            ->where('order_id', $id)
+            ->orderBy('create_date', 'desc')
+            ->get();
+
+        return view('admin.pages.order.show', compact('order', 'totalItems', 'totalQuantity', 'calculatedTotal', 'history'));
     }
 
     /**
@@ -383,26 +402,45 @@ class OrderController extends Controller
                             continue;
                         }
 
-                        // Hoàn trả tồn kho cũ (nếu thay đổi lô hoặc số lượng)
-                        if ($detail->inventory_id) {
-                            $oldInventory = Inventory::find($detail->inventory_id);
-                            if ($oldInventory) {
-                                $oldInventory->stock_quantity += $oldQtyBase;
-                                $oldInventory->save();
+                        // Trường hợp 1: Cùng lô, chỉ thay đổi số lượng → trừ/hoàn chênh lệch
+                        if ($detail->inventory_id == $item['inventory_id']) {
+                            if ($qtyDifference > 0) {
+                                // Tăng lượng: trừ thêm chênh lệch
+                                if ($inventory->stock_quantity < $qtyDifference) {
+                                    throw new Exception(
+                                        "Lô {$inventory->code} không đủ tồn kho. " .
+                                            "Còn: {$inventory->stock_quantity} viên, cần thêm: {$qtyDifference} viên"
+                                    );
+                                }
+                                $inventory->stock_quantity -= $qtyDifference;
+                            } else {
+                                // Giảm lượng: hoàn chênh lệch
+                                $inventory->stock_quantity += abs($qtyDifference);
                             }
-                        }
+                            $inventory->save();
+                        } else {
+                            // Trường hợp 2: Thay đổi lô → hoàn trả lô cũ + trừ lô mới
+                            // Hoàn trả tồn kho cũ
+                            if ($detail->inventory_id) {
+                                $oldInventory = Inventory::find($detail->inventory_id);
+                                if ($oldInventory) {
+                                    $oldInventory->stock_quantity += $oldQtyBase;
+                                    $oldInventory->save();
+                                }
+                            }
 
-                        // Kiểm tra tồn kho mới
-                        if ($inventory->stock_quantity < $neededBase) {
-                            throw new Exception(
-                                "Lô {$inventory->code} không đủ tồn kho. " .
-                                    "Còn: {$inventory->stock_quantity} viên, cần: {$neededBase} viên"
-                            );
-                        }
+                            // Kiểm tra tồn kho mới
+                            if ($inventory->stock_quantity < $neededBase) {
+                                throw new Exception(
+                                    "Lô {$inventory->code} không đủ tồn kho. " .
+                                        "Còn: {$inventory->stock_quantity} viên, cần: {$neededBase} viên"
+                                );
+                            }
 
-                        // Trừ tồn kho mới
-                        $inventory->stock_quantity -= $neededBase;
-                        $inventory->save();
+                            // Trừ tồn kho mới
+                            $inventory->stock_quantity -= $neededBase;
+                            $inventory->save();
+                        }
 
                         // Cập nhật detail
                         $detail->update([
@@ -479,6 +517,26 @@ class OrderController extends Controller
                     'update_by' => Auth::user()->id
                 ]);
 
+                $history = OrderHistory::create([
+                    'order_id' => $order->id,
+                    'total' => $newTotal,
+                    'create_date' => now(),
+                    'create_by' => Auth::user()->id,
+                    'isactive' => 1
+                ]);
+                $currentDetails = $order->details()->where('isactive', 1)->get();
+
+                foreach ($currentDetails as $detail) {
+                    OrderDetailHistory::create([
+                        'order_history_id' => $history->id,
+                        'product_id' => $detail->product_id,
+                        'inventory_id' => $detail->inventory_id,
+                        'code' => $detail->code,
+                        'product_unit_id' => $detail->product_unit_id,
+                        'price' => $detail->price,
+                        'quantity' => $detail->quantity
+                    ]);
+                }
                 return response()->json([
                     'success' => true,
                     'message' => 'Cập nhật đơn hàng thành công!',
@@ -546,82 +604,5 @@ class OrderController extends Controller
         }
     }
 
-    /**
-     * Cập nhật 1 chi tiết đơn hàng
-     */
-    public function updateDetail(Request $request, $orderId, $detailId)
-    {
-        $request->validate([
-            'quantity' => 'required|numeric|min:0.01',
-            'unit_id' => 'required|integer|exists:product_unit,id',
-            'inventory_id' => 'required|integer|exists:inventory,id',
-        ]);
-
-        try {
-            return DB::transaction(function () use ($request, $orderId, $detailId) {
-                $order = Order::findOrFail($orderId);
-                $detail = OrderDetail::where('order_id', $orderId)
-                    ->where('id', $detailId)
-                    ->with('productUnit')
-                    ->firstOrFail();
-
-                if ($order->isactive == 0) {
-                    throw new Exception('Không thể sửa đơn đã hủy');
-                }
-
-                // Hoàn trả tồn cũ
-                if ($detail->inventory_id) {
-                    $oldInventory = Inventory::find($detail->inventory_id);
-                    if ($oldInventory) {
-                        $oldQtyBase = $detail->quantity * max(1, $detail->productUnit->quantity_per_unit ?? 1);
-                        $oldInventory->stock_quantity += $oldQtyBase;
-                        $oldInventory->save();
-                    }
-                }
-
-                // Kiểm tra và trừ tồn mới
-                $newUnit = \App\Models\ProductUnit::findOrFail($request->unit_id);
-                $newInventory = Inventory::findOrFail($request->inventory_id);
-                $newQtyBase = $request->quantity * max(1, $newUnit->quantity_per_unit);
-
-                if ($newInventory->stock_quantity < $newQtyBase) {
-                    throw new Exception('Không đủ tồn kho');
-                }
-
-                $newInventory->stock_quantity -= $newQtyBase;
-                $newInventory->save();
-
-                // Cập nhật detail
-                $detail->update([
-                    'product_unit_id' => $request->unit_id,
-                    'inventory_id' => $request->inventory_id,
-                    'code' => $newInventory->code,
-                    'quantity' => $request->quantity,
-                    'price' => $newUnit->price_sale,
-                ]);
-
-                // Cập nhật tổng tiền
-                $newTotal = $order->details()
-                    ->where('isactive', 1)
-                    ->sum(DB::raw('quantity * price'));
-
-                $order->update([
-                    'total' => $newTotal,
-                    'update_date' => now(),
-                    'update_by' => Auth::user()->id
-                ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Cập nhật thành công',
-                    'new_total' => $newTotal
-                ]);
-            });
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 400);
-        }
-    }
+   
 }
