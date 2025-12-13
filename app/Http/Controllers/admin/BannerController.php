@@ -10,14 +10,7 @@ use Illuminate\Support\Facades\File;
 
 class BannerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index2()
-    {
-        $items = Banner::orderBy("id", "desc")->get();
-        return view("admin.pages.Banner.index", compact("items"));
-    }
+    
     public function index(Request $request)
     {
         $query = Banner::query();

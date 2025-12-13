@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Brand;
 use Illuminate\Support\Facades\Auth;
+
 class BrandController extends Controller
 {
-     public function index()
+    public function index()
     {
         $brands = Brand::orderBy('id', 'desc')->get();
         return view('admin.pages.Brand.index', compact('brands'));

@@ -1,485 +1,119 @@
-@extends('admin.master_layout')
+@extends('admin.layouts.master')
 
-@section('page_content')
-<div class="content-wrapper">
-    <div class="container-fluid mt-4">
-        
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
-            <div>
-                <h3>Chi Tiết Đơn Hàng #{{ $order->id }}</h3>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb bg-transparent p-0">
-                        <li class="breadcrumb-item">
-                            <a href="{{ route('admin.orders.index') }}">Đơn hàng</a>
-                        </li>
-                        <li class="breadcrumb-item active">Chi tiết #{{ $order->id }}</li>
-                    </ol>
-                </nav>
-            </div>
-            <div>
-                <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </a>
-                @if($order->isactive == 1)
-                    <button type="button" class="btn btn-danger" id="cancelOrderBtn">
-                        <i class="fas fa-times"></i> Hủy đơn
-                    </button>
-                @endif
-                <button class="btn btn-info" onclick="window.print()">
-                    <i class="fas fa-print"></i> In đơn
-                </button>
-            </div>
-        </div>
+@section('title', 'Quản lý bài viết')
 
-        <!-- Print Header (only visible when printing) -->
-        <div class="print-only text-center mb-4" style="display:none">
-            <h2>ĐơN THUỐC</h2>
-            <p>Mã đơn: #{{ $order->id }}</p>
-            <p>Ngày: {{ \Carbon\Carbon::parse($order->create_date)->format('d/m/Y H:i') }}</p>
-        </div>
-
-        <div class="row">
-            <!-- Thông tin đơn hàng -->
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-info-circle"></i> Thông tin đơn hàng</h5>
+@section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Danh sách bài viết</h3>
+                    <div class="card-tools">
+                        <a href="{{ route('admin.news.create') }}" class="btn btn-sm btn-primary">Thêm bài viết</a>
                     </div>
-                    <div class="card-body">
-                        <table class="table table-sm table-borderless">
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('admin.news.index') }}" class="form-inline mb-3">
+                        <div class="form-group mr-2">
+                            <label for="category_id" class="sr-only">Thể loại</label>
+                            <select name="category_id" id="category_id" class="form-control">
+                                <option value="">Tất cả thể loại</option>
+                                @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group mr-2">
+                            <label for="isactive" class="sr-only">Trạng thái</label>
+                            <select name="isactive" id="isactive" class="form-control">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="1" {{ request('isactive') == '1' ? 'selected' : '' }}>Đang hoạt động</option>
+                                <option value="0" {{ request('isactive') == '0' ? 'selected' : '' }}>Ngừng hoạt động</option>
+                            </select>
+                        </div>
+                        <div class="form-group mr-2">
+                            <label for="search" class="sr-only">Tìm kiếm</label>
+                            <input type="text" class="form-control" id="search" name="search" placeholder="Tìm kiếm..." value="{{ request('search') }}">
+                        </div>
+                        <button type="submit" class="btn btn-info">Lọc</button>
+                        <a href="{{ route('admin.news.index') }}" class="btn btn-secondary ml-2">Reset</a>
+                    </form>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
                             <tr>
-                                <td width="120"><strong>Mã đơn:</strong></td>
-                                <td>#{{ $order->id }}</td>
+                                <th>ID</th>
+                                <th>Ảnh</th>
+                                <th>Tiêu đề</th>
+                                <th>Thể loại</th>
+                                <th>Người tạo</th>
+                                <th>Ngày tạo</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
                             </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($news as $item)
                             <tr>
-                                <td><strong>Khách hàng:</strong></td>
+                                <td>{{ $item->id }}</td>
                                 <td>
-                                    @if($order->customer)
-                                        <strong>{{ $order->customer->name }}</strong><br>
-                                        <small class="text-muted">
-                                            <i class="fas fa-phone"></i> {{ $order->customer->phone ?? 'N/A' }}<br>
-                                            <i class="fas fa-envelope"></i> {{ $order->customer->email ?? 'N/A' }}
-                                        </small>
+                                    @if($item->image)
+                                    <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}" style="max-width: 100px;">
                                     @else
-                                        <span class="badge badge-secondary">Khách vãng lai</span>
+                                    <span class="text-muted">Không có ảnh</span>
                                     @endif
                                 </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Trạng thái:</strong></td>
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->category->name ?? 'N/A' }}</td>
+                                <td>{{ $item->creator->name ?? 'N/A' }}</td>
+                                <td>{{ $item->create_date->format('d/m/Y H:i') }}</td>
                                 <td>
-                                    @if($order->isactive == 1)
-                                        <span class="badge badge-success badge-lg">Đang hoạt động</span>
+                                    @if($item->isactive)
+                                    <span class="badge badge-success">Đang hoạt động</span>
                                     @else
-                                        <span class="badge badge-secondary badge-lg">Đã hủy</span>
+                                    <span class="badge badge-danger">Ngừng hoạt động</span>
                                     @endif
                                 </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Ngày tạo:</strong></td>
-                                <td>{{ \Carbon\Carbon::parse($order->create_date)->format('d/m/Y H:i:s') }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Người tạo:</strong></td>
                                 <td>
-                                    <span class="badge badge-info">
-                                        {{ $order->user->name ?? 'N/A' }}
-                                    </span>
+                                    <a href="{{ route('admin.news.show', $item->id) }}" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('admin.news.edit', $item->id) }}" class="btn btn-sm btn-primary" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('admin.news.toggle', $item->id) }}" method="POST" style="display: inline-block;">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-sm {{ $item->isactive ? 'btn-warning' : 'btn-success' }}" title="{{ $item->isactive ? 'Vô hiệu hóa' : 'Kích hoạt' }}">
+                                            <i class="fas {{ $item->isactive ? 'fa-ban' : 'fa-check' }}"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.news.destroy', $item->id) }}" method="POST" style="display: inline-block;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
-                            @if($order->update_date)
-                                <tr>
-                                    <td><strong>Cập nhật:</strong></td>
-                                    <td>{{ \Carbon\Carbon::parse($order->update_date)->format('d/m/Y H:i:s') }}</td>
-                                </tr>
-                            @endif
-                        </table>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="text-center">Không có dữ liệu</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-center">
+                        {{ $news->links() }}
                     </div>
                 </div>
-
-                <!-- Tổng tiền -->
-                <div class="card mb-4">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0"><i class="fas fa-calculator"></i> Thanh toán</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Tổng sản phẩm:</span>
-                            <strong class="text-primary">{{ $totalItems ?? $order->details->count() }}</strong>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Tổng số lượng:</span>
-                            <strong class="text-primary">{{ $totalQuantity ?? $order->details->sum('quantity') }}</strong>
-                        </div>
-                        <hr>
-                        <div class="d-flex justify-content-between">
-                            <h5 class="mb-0">Tổng tiền:</h5>
-                            <h5 class="text-success mb-0">
-                                <strong>{{ number_format($order->total, 0, ',', '.') }} đ</strong>
-                            </h5>
-                        </div>
-                        
-                        @php
-                            $calculatedTotal = $order->details->sum(function($d) {
-                                return $d->quantity * $d->getPrice();
-                            });
-                        @endphp
-                        
-                        @if(abs($calculatedTotal - $order->total) > 1)
-                            <div class="alert alert-warning mt-3 mb-0">
-                                <small>
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Tổng tính lại: {{ number_format($calculatedTotal, 0, ',', '.') }} đ
-                                </small>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chi tiết sản phẩm -->
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0"><i class="fas fa-list"></i> Chi tiết sản phẩm</h5>
-                    </div>
-                    <div class="card-body">
-                        @if($order->details->isEmpty())
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-circle"></i>
-                                Đơn hàng không có sản phẩm
-                            </div>
-                        @else
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover table-sm">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th width="50" class="text-center">#</th>
-                                            <th>Sản phẩm</th>
-                                            <th width="120" class="text-center">Lô thuốc</th>
-                                            <th width="100" class="text-center">Đơn vị</th>
-                                            <th width="100" class="text-center">Số lượng</th>
-                                            <th width="120" class="text-right">Đơn giá</th>
-                                            <th width="130" class="text-right">Thành tiền</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php $totalAmount = 0; @endphp
-                                        @foreach($order->details as $index => $detail)
-                                            @php 
-                                                $amount = $detail->quantity * $detail->price;
-                                                $totalAmount += $amount;
-                                            @endphp
-                                            <tr>
-                                                <td class="text-center">{{ $index + 1 }}</td>
-                                                <td>
-                                                    <strong>{{ $detail->product->name ?? 'N/A' }}</strong>
-                                                    @if($detail->product)
-                                                        <br>
-                                                        <small class="text-muted">
-                                                            @if($detail->product->brand)
-                                                                <span class="badge badge-light">
-                                                                    {{ $detail->product->brand->name }}
-                                                                </span>
-                                                            @endif
-                                                            @if($detail->product->category)
-                                                                <span class="badge badge-light">
-                                                                    {{ $detail->product->category->name }}
-                                                                </span>
-                                                            @endif
-                                                        </small>
-                                                    @else
-                                                        <br>
-                                                        <small class="text-danger">
-                                                            <i class="fas fa-exclamation-triangle"></i>
-                                                            Sản phẩm không tồn tại (ID: {{ $detail->product_id }})
-                                                        </small>
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
-                                                    @if($detail->productUnit && $detail->productUnit->unit)
-                                                        <span class="badge badge-primary">
-                                                            {{ $detail->productUnit->unit->name }}
-                                                        </span>
-                                                    @else
-                                                        <span class="badge badge-secondary">N/A</span>
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
-                                                    <strong>{{ number_format($detail->quantity, 2) }}</strong>
-                                                </td>
-                                                <td class="text-right">
-                                                    {{ number_format($detail->price, 0, ',', '.') }} đ
-                                                </td>
-                                                <td class="text-right">
-                                                    <strong>{{ number_format($amount, 0, ',', '.') }} đ</strong>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                    <tfoot class="bg-light">
-                                        <tr>
-                                            <th colspan="5" class="text-right">Tổng cộng:</th>
-                                            <th class="text-right text-success">
-                                                <strong>{{ number_format($totalAmount, 0, ',', '.') }} đ</strong>
-                                            </th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Lịch sử thay đổi -->
-                @if($order->update_date)
-                    <div class="card mt-4 no-print">
-                        <div class="card-header bg-warning">
-                            <h5 class="mb-0"><i class="fas fa-history"></i> Lịch sử thay đổi</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="timeline">
-                                <div class="timeline-item">
-                                    <div class="timeline-marker bg-danger"></div>
-                                    <div class="timeline-content">
-                                        <p class="mb-0">
-                                            <strong>Đơn hàng đã bị hủy</strong>
-                                        </p>
-                                        <small class="text-muted">
-                                            {{ \Carbon\Carbon::parse($order->update_date)->format('d/m/Y H:i:s') }}
-                                            @if($order->update_by)
-                                                - Bởi: {{ App\Models\User::find($order->update_by)->name ?? 'N/A' }}
-                                            @endif
-                                        </small>
-                                    </div>
-                                </div>
-                                <div class="timeline-item">
-                                    <div class="timeline-marker bg-success"></div>
-                                    <div class="timeline-content">
-                                        <p class="mb-0">
-                                            <strong>Đơn hàng được tạo</strong>
-                                        </p>
-                                        <small class="text-muted">
-                                            {{ \Carbon\Carbon::parse($order->create_date)->format('d/m/Y H:i:s') }}
-                                            - Bởi: {{ $order->user->name ?? 'N/A' }}
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<!-- Cancel Order Modal -->
-<div class="modal fade" id="cancelOrderModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Xác nhận hủy đơn hàng
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="lead">Bạn có chắc chắn muốn hủy đơn hàng <strong class="text-danger">#{{ $order->id }}</strong>?</p>
-                <div class="alert alert-warning">
-                    <h6><i class="fas fa-exclamation-triangle"></i> <strong>Lưu ý:</strong></h6>
-                    <ul class="mb-0">
-                        <li>Tồn kho sẽ được hoàn trả cho tất cả sản phẩm</li>
-                        <li>Đơn hàng sẽ được đánh dấu là đã hủy</li>
-                        <li><strong class="text-danger">Thao tác này không thể hoàn tác</strong></li>
-                    </ul>
-                </div>
-                <div class="form-group">
-                    <label>Lý do hủy (tùy chọn):</label>
-                    <textarea class="form-control" id="cancelReason" rows="3" placeholder="Nhập lý do hủy đơn..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="fas fa-times"></i> Đóng
-                </button>
-                <button type="button" class="btn btn-danger" id="confirmCancelBtn">
-                    <span class="spinner-border spinner-border-sm d-none" id="cancelSpinner"></span>
-                    <i class="fas fa-check"></i> Xác nhận hủy
-                </button>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-/* Print styles */
-@media print {
-    .no-print,
-    .btn,
-    .breadcrumb,
-    .card-header,
-    nav,
-    .modal,
-    .timeline,
-    .alert {
-        display: none !important;
-    }
-    
-    .print-only {
-        display: block !important;
-    }
-    
-    .card {
-        border: 1px solid #dee2e6 !important;
-        box-shadow: none !important;
-        page-break-inside: avoid;
-    }
-    
-    .table {
-        font-size: 11px;
-    }
-    
-    .badge {
-        border: 1px solid #000;
-    }
-    
-    body {
-        font-size: 12px;
-    }
-    
-    @page {
-        margin: 1.5cm;
-    }
-}
-
-/* Timeline styles */
-.timeline {
-    position: relative;
-    padding: 20px 0;
-}
-
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 7px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: #e9ecef;
-}
-
-.timeline-item {
-    position: relative;
-    padding-left: 40px;
-    padding-bottom: 25px;
-}
-
-.timeline-item:last-child {
-    padding-bottom: 0;
-}
-
-.timeline-marker {
-    position: absolute;
-    left: 0;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.timeline-content {
-    padding: 10px 15px;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-/* Badge sizing */
-.badge-lg {
-    padding: 0.5em 0.75em;
-    font-size: 90%;
-}
-
-/* Responsive table */
-@media (max-width: 768px) {
-    .table-responsive {
-        font-size: 12px;
-    }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const cancelBtn = document.getElementById('cancelOrderBtn');
-    
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', function() {
-            $('#cancelOrderModal').modal('show');
-        });
-    }
-
-    document.getElementById('confirmCancelBtn').addEventListener('click', function() {
-        const spinner = document.getElementById('cancelSpinner');
-        const btn = this;
-        const reason = document.getElementById('cancelReason').value;
-        
-        btn.disabled = true;
-        spinner.classList.remove('d-none');
-
-        fetch('/admin/orders/{{ $order->id }}/cancel', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                reason: reason
-            })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                $('#cancelOrderModal').modal('hide');
-                
-                // Show success message
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-success alert-dismissible fade show';
-                alertDiv.innerHTML = `
-                    <strong>Thành công!</strong> ${data.message}
-                    <button type="button" class="close" data-dismiss="alert">
-                        <span>&times;</span>
-                    </button>
-                `;
-                document.querySelector('.content-wrapper .container-fluid').insertBefore(
-                    alertDiv, 
-                    document.querySelector('.content-wrapper .container-fluid').firstChild
-                );
-                
-                // Reload sau 2 giây
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else {
-                alert('Lỗi: ' + (data.error || 'Không thể hủy đơn hàng'));
-                btn.disabled = false;
-                spinner.classList.add('d-none');
-            }
-        })
-        .catch(err => {
-            console.error('Cancel error:', err);
-            alert('Lỗi khi hủy đơn hàng. Vui lòng thử lại.');
-            btn.disabled = false;
-            spinner.classList.add('d-none');
-        });
-    });
-});
-</script>
-
 @endsection

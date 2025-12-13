@@ -9,6 +9,8 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\BrandController;
+use App\Http\Controllers\admin\NewsController;
+use App\Http\Controllers\admin\NewCategoryController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\SearchUser;
 
@@ -94,6 +96,21 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
     Route::post('/update_banner/{id}', [BannerController::class, 'update'])->name('update_banner');
     Route::get('/delete_banner/{id}', [BannerController::class, 'destroy'])->name('delete_banner');
     Route::get('/toggle_banner/{id}', [BannerController::class, 'toggleActive'])->name('toggle_banner');
+
+    Route::get('/list_news', [NewsController::class, 'index'])->name('list_news');
+    Route::get('/create_news', [NewsController::class, 'create'])->name('create_news');
+    Route::post('/store_news', [NewsController::class, 'store'])->name('store_news');
+    Route::get('/edit_news/{id}', [NewsController::class, 'edit'])->name('edit_news');
+    Route::post('/update_news/{id}', [NewsController::class, 'update'])->name('update_news');
+    Route::get('/delete_news/{id}', [NewsController::class, 'destroy'])->name('delete_news');   
+    Route::get('/toggle_news/{id}', [NewsController::class, 'toggle'])->name('toggle_news');
+
+    Route::post('/store_news_category', [NewCategoryController::class, 'store'])->name('store_news_category');
+    Route::get('/list_news_category', [NewCategoryController::class, 'index'])->name('list_news_category');
+    Route::get('/edit_news_category/{id}', [NewCategoryController::class, 'edit'])->name('edit_news_category');
+    Route::post('/update_news_category/{id}', [NewCategoryController::class, 'update'])->name('update_news_category');
+    Route::get('/delete_news_category/{id}', [NewCategoryController::class, 'destroy'])->name('delete_news_category');   
+    Route::get('/toggle_news_category/{id}', [NewCategoryController::class, 'toggle'])->name('toggle_news_category');
 
     Route::post('/inventory/import', [ProductController::class, 'importExcel']);
 });

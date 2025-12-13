@@ -209,7 +209,7 @@ class OrderController extends Controller
             $query->whereDate('create_date', '<=', $request->date_to);
         }
 
-        $orders = $query->orderBy('create_date', 'desc')
+        $orders = $query->orderByDesc('create_date')
             ->paginate(20)
             ->appends($request->all());
 

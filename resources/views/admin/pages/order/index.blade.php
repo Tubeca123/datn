@@ -225,6 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
     $(document).ready(function() {
         $('#example2').DataTable({
+            order:[],
             pageLength: 10,
             language: {
                 lengthMenu: "Hiển thị _MENU_ dòng",
