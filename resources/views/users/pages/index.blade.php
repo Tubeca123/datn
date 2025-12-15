@@ -38,7 +38,7 @@
 								<p>sản phẩm ({{$category->count}})</p>
 								<ul>
 									@foreach($category->products_image as $img)
-										<li><a href="shop-right-sidebar.html"><img src="{{asset($img)}}"
+										<li><a href="{{route('shop')}}"><img src="{{asset($img)}}"
 												alt="category"></a></li>
 									@endforeach
 								</ul>
@@ -61,14 +61,14 @@
 											<span class="new">new</span>
 										</div>
 										<div class="mn-img">
-											<a href="product-detail.html" class="image">
+											<a href="{{route('product',['product_id'=> $product->id])}}" class="image">
 												<img class="main-img" src="{{asset($product->images[0]->src ?? '')}}" alt="product">
 												<img class="hover-img" src="{{asset($product->images[1]->src ?? '')}}" alt="product">
 											</a>
 											<div class="mn-pro-loader"></div>
 											<div class="mn-options">
 												<ul>
-													<li><a href="javascript:void(0)"><i
+													<li><a href="{{route('product',['product_id'=> $product->id])}}"><i
 																class="ri-eye-line"></i></a></li>
 													<li><a href="javascript:void(0)" data-tooltip title="Compare"
 															class="mn-compare"><i class="ri-repeat-line"></i></a></li>
@@ -80,14 +80,6 @@
 										</div>
 									</div>
 									<div class="mn-product-detail">
-										<div class="cat">
-											<a href="shop-right-sidebar.html">T-shirt</a>
-											<ul>
-												<li>s</li>
-												<li>m</li>
-												<li>xl</li>
-											</ul>
-										</div>
 										<h5><a href="index.html">Cotton fabric T-shirt</a></h5>
 										<div class="mn-price">
 											<div class="mn-price-new">$120</div>
@@ -221,14 +213,14 @@
 											<span class="new">new</span>
 										</div>
 										<div class="mn-img">
-											<a href="product-detail.html" class="image">
+											<a href="{{route('product',['product_id'=> $product->id])}}" class="image">
 												<img class="main-img" src="{{asset($product->images[0]->src ?? '')}}" alt="product">
 												<img class="hover-img" src="{{asset($product->images[1]->src ?? '')}}" alt="product">
 											</a>
 											<div class="mn-pro-loader"></div>
 											<div class="mn-options">
 												<ul>
-													<li><a href="javascript:void(0)"><i
+													<li><a href="{{route('product',['product_id'=> $product->id])}}"><i
 																class="ri-eye-line"></i></a></li>
 													<li><a href="javascript:void(0)" data-tooltip title="Compare"
 															class="mn-compare"><i class="ri-repeat-line"></i></a></li>

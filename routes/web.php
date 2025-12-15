@@ -18,14 +18,21 @@ use App\Http\Controllers\admin\InventoryController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::get('/blog', [HomeController::class, 'blog'])->name('blog');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
+Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
+Route::get('/compare', [HomeController::class, 'compare'])->name('compare');
+Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
+Route::get('/user-login', [HomeController::class, 'login'])->name('user_login');
+Route::post('/handle-user-login', [HomeController::class, 'handleLogin'])->name('handle_user_login');
+Route::post('/handle-user-register', [HomeController::class, 'handleRegister'])->name('handle_user_register');
+Route::get('/user-register', [HomeController::class, 'register'])->name('user_register');
+Route::get('/user-logout', [HomeController::class, 'logout'])->name('user_logout');
 
-Route::get('/shop', function () {
-    return view('users/pages/shop');
-});
-
-Route::get('/product', function () {
-    return view('users/pages/product');
-});
+Route::get('/product', [HomeController::class, 'product'])->name('product');
 
 // =======================================================================
 Route::get('/register', [UserController::class, 'register'])->name('register');
