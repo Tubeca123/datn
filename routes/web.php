@@ -13,8 +13,8 @@ use App\Http\Controllers\admin\NewsController;
 use App\Http\Controllers\admin\NewCategoryController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\SearchUser;
-
 use App\Http\Controllers\users\HomeController;
+use App\Http\Controllers\admin\InventoryController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -39,7 +39,8 @@ Route::get('/test2', [UserController::class, 'index']);
 
 Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
     Route::get('/trangchu_admin', [DashboardController::class, 'index'])->name('trang_chu');
-
+    // Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard/realtime', [DashboardController::class, 'getRealtimeData'])->name('admin.dashboard.realtime');
 
 
     Route::get('/orders/create', [OrderController::class, 'create'])->name('order.create');
@@ -112,5 +113,8 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
     Route::get('/delete_news_category/{id}', [NewCategoryController::class, 'destroy'])->name('delete_news_category');   
     Route::get('/toggle_news_category/{id}', [NewCategoryController::class, 'toggle'])->name('toggle_news_category');
 
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('admin_inventory');
+    Route::get('/inventory/{productId}/batches', [InventoryController::class, 'batchDetails'])->name('admin_inventory_batch');
+    
     Route::post('/inventory/import', [ProductController::class, 'importExcel']);
 });

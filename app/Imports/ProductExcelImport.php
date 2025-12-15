@@ -9,7 +9,7 @@ use App\Models\ImageProduct;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Auth;
 class ProductExcelImport implements ToCollection
 {
     public function collection(Collection $rows)
@@ -62,6 +62,7 @@ class ProductExcelImport implements ToCollection
                     'manufacturer' => $manufacturer,
                     'country' => $country,
                     'create_date' => now(),
+                    'create_by'=>Auth::user()->id,
                     'isactive' => 1,
                 ]
             );
@@ -130,6 +131,7 @@ class ProductExcelImport implements ToCollection
                 'import_quantity' => $importQty,
                 'stock_quantity' => $importQty,
                 'create_date' => now(),
+                'create_by'=>Auth::user()->id
             ]);
 
 

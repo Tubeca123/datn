@@ -41,10 +41,10 @@ class Inventory extends Model
     {
         return $this->belongsTo(ProductUnit::class, 'product_unit_id');
     }
-
-    /**
-     * Trả về phần trăm còn lại trong lô (ví dụ: 100 -> 50 => 50%)
-     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'create_by');
+    }
     public function remainingPercent(): float
     {
         if ($this->import_quantity <= 0) return 0.0;
