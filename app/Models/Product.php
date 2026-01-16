@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Carbon\Carbon;
 
 class Product extends Model
 {
@@ -18,6 +19,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'description',
+        'details',
         'brand_id',
         'category_id',
         'manufacturer',
@@ -43,8 +45,16 @@ class Product extends Model
     }
     public function inventory()
     {
+        
         return $this->hasMany(Inventory::class, 'product_id');
     }
+    public function inventoryValid()
+    {
+        return $this->hasMany(Inventory::class, 'product_id')
+            ->whereDate('date_end', '>=', Carbon::today())
+            ->orderBy('date_end', 'asc');
+    }
+
     public function units()
     {
         return $this->hasMany(ProductUnit::class, 'product_id');

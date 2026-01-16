@@ -15,14 +15,17 @@ use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\SearchUser;
 use App\Http\Controllers\users\HomeController;
 use App\Http\Controllers\admin\InventoryController;
-
+use App\Http\Controllers\admin\AIController;
+use App\Http\Controllers\account\AccountController;
+use App\Http\Controllers\users\CartController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/blog', [HomeController::class, 'blog'])->name('blog');
-Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
-Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
+Route::get('/blogdetail', [HomeController::class, 'blogdetails'])->name('blogdetail');
+Route::get('/ ', [HomeController::class, 'contact'])->name('contact');
+
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::get('/compare', [HomeController::class, 'compare'])->name('compare');
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
@@ -34,6 +37,10 @@ Route::get('/user-logout', [HomeController::class, 'logout'])->name('user_logout
 
 Route::get('/product', [HomeController::class, 'product'])->name('product');
 
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add')->middleware('auth');
+Route::get('/cart', [CartController::class, 'cart'])->name('cart');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 // =======================================================================
 Route::get('/register', [UserController::class, 'register'])->name('register');
 Route::post('/register', [UserController::class, 'store'])->name('register.store');
@@ -44,10 +51,24 @@ Route::post('/login', [UserController::class, 'loginIn'])->name('login.in');
 Route::get('/test', [RoleController::class, 'index'])->name('test');
 Route::get('/test2', [UserController::class, 'index']);
 
+
+
 Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
+
+    Route::get('/profile', [AccountController::class, 'profile'])->name('profile');
+    Route::get('/edit-profile', [AccountController::class, 'editProfile'])->name('edit-profile');
+    Route::post('/profile/update', [AccountController::class, 'updateProfile'])->name('updateProfile');
+    Route::get('/change-password', [AccountController::class, 'editPassword'])->name('editPassword');
+    Route::post('/update-password', [AccountController::class, 'updatePassword'])->name('updatePassword');
+    Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
+
+
+    Route::post('/ask-ai-admin', [AIController::class, 'askAdmin']);
+
     Route::get('/trangchu_admin', [DashboardController::class, 'index'])->name('trang_chu');
     // Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/dashboard/realtime', [DashboardController::class, 'getRealtimeData'])->name('admin.dashboard.realtime');
+    Route::get('/dashboard/revenue-details', [DashboardController::class, 'revenueDetails'])->name('admin.dashboard.revenue-details');
 
 
     Route::get('/orders/create', [OrderController::class, 'create'])->name('order.create');
@@ -110,18 +131,21 @@ Route::prefix('admin')->middleware(CheckLogin::class)->group(function () {
     Route::post('/store_news', [NewsController::class, 'store'])->name('store_news');
     Route::get('/edit_news/{id}', [NewsController::class, 'edit'])->name('edit_news');
     Route::post('/update_news/{id}', [NewsController::class, 'update'])->name('update_news');
-    Route::get('/delete_news/{id}', [NewsController::class, 'destroy'])->name('delete_news');   
+    Route::get('/delete_news/{id}', [NewsController::class, 'destroy'])->name('delete_news');
     Route::get('/toggle_news/{id}', [NewsController::class, 'toggle'])->name('toggle_news');
 
     Route::post('/store_news_category', [NewCategoryController::class, 'store'])->name('store_news_category');
     Route::get('/list_news_category', [NewCategoryController::class, 'index'])->name('list_news_category');
     Route::get('/edit_news_category/{id}', [NewCategoryController::class, 'edit'])->name('edit_news_category');
     Route::post('/update_news_category/{id}', [NewCategoryController::class, 'update'])->name('update_news_category');
-    Route::get('/delete_news_category/{id}', [NewCategoryController::class, 'destroy'])->name('delete_news_category');   
+    Route::get('/delete_news_category/{id}', [NewCategoryController::class, 'destroy'])->name('delete_news_category');
     Route::get('/toggle_news_category/{id}', [NewCategoryController::class, 'toggle'])->name('toggle_news_category');
 
     Route::get('/inventory', [InventoryController::class, 'index'])->name('admin_inventory');
     Route::get('/inventory/{productId}/batches', [InventoryController::class, 'batchDetails'])->name('admin_inventory_batch');
-    
-    Route::post('/inventory/import', [ProductController::class, 'importExcel']);
+    Route::post('/api/inventory/{batchId}/toggle-status', [InventoryController::class, 'toggleBatch'])->name('inventory.toggle-status');
+    Route::get('/inventory/history', [InventoryController::class, 'importHistory'])->name('admin_inventory_history');
+    Route::get('/api/inventory/expiry-notifications', [InventoryController::class, 'getExpiryNotifications'])->name('inventory.expiry-notifications');
+
+    Route::post('/inventory/import', [ProductController::class, 'importExcel'])->name('importExcel');
 });

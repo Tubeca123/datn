@@ -14,7 +14,7 @@ use Exception;
 use App\Models\User;
 use App\Models\OrderHistory;
 use App\Models\OrderDetailHistory;
-
+use Carbon\Carbon;
 class OrderController extends Controller
 {
     public function create()
@@ -63,6 +63,7 @@ class OrderController extends Controller
 
         $inventories = $product->inventory()
             ->where('stock_quantity', '>', 0)
+            ->where('date_end', '>=', Carbon::now())
             ->orderBy('date_end', 'asc')
             ->orderBy('id', 'asc')
             ->get()
@@ -195,6 +196,7 @@ class OrderController extends Controller
         $query = Order::query();
 
         $status = $request->get('status', 'active');
+        
         if ($status === 'active') {
             $query->where('isactive', 1);
         } elseif ($status === 'cancelled') {

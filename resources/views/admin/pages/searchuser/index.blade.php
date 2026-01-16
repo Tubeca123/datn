@@ -158,7 +158,7 @@
             }
         });
 
-        // Xử lý filter button
+
         $('#applyFilterBtn').on('click', function() {
             $('#filterForm').submit();
         });

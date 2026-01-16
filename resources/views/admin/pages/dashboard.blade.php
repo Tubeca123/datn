@@ -47,26 +47,29 @@
             <!-- Các thẻ thống kê tổng quan -->
             <div class="row">
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3>{{ number_format($totalRevenue, 0, ',', '.') }}đ</h3>
-                            <p>Tổng Doanh Thu</p>
+                    <a href="{{ route('admin.dashboard.revenue-details', ['start_date' => $startDate, 'end_date' => $endDate]) }}" style="text-decoration: none; color: inherit;">
+                        <div class="small-box bg-info" style="cursor: pointer; transition: all 0.3s;">
+                            <div class="inner">
+                                <h3>{{ number_format($totalRevenue, 0, ',', '.') }}đ</h3>
+                                <p>Tổng Doanh Thu</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            @if($revenueGrowth != 0)
+                            <div class="small-box-footer">
+                                <span class="{{ $revenueGrowth > 0 ? 'text-success' : 'text-danger' }}">
+                                    <i class="fas fa-arrow-{{ $revenueGrowth > 0 ? 'up' : 'down' }}"></i>
+                                    {{ number_format(abs($revenueGrowth), 1) }}% so với kỳ trước
+                                </span>
+                            </div>
+                            @endif
                         </div>
-                        <div class="icon">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        @if($revenueGrowth != 0)
-                        <div class="small-box-footer">
-                            <span class="{{ $revenueGrowth > 0 ? 'text-success' : 'text-danger' }}">
-                                <i class="fas fa-arrow-{{ $revenueGrowth > 0 ? 'up' : 'down' }}"></i>
-                                {{ number_format(abs($revenueGrowth), 1) }}% so với kỳ trước
-                            </span>
-                        </div>
-                        @endif
-                    </div>
+                    </a>
                 </div>
 
                 <div class="col-lg-3 col-6">
+                    <a href="{{ route('admin.orders.index', ['date_from' => $startDate, 'date_to' => $endDate]) }}" style="text-decoration: none; color: inherit;">
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ number_format($totalOrders) }}</h3>
@@ -76,6 +79,7 @@
                             <i class="fas fa-shopping-cart"></i>
                         </div>
                     </div>
+                    </a>
                 </div>
 
                 <div class="col-lg-3 col-6">

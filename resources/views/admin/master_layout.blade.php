@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | Fixed Navbar Layout</title>
+  <title>Tú Phương </title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -14,7 +14,9 @@
   <link rel="stylesheet" href="{{asset("assets/dist/css/adminlte.min.css")}}">
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
+  <link href="{{asset("assets/plugins/toastr/toastr.min.css")}}" rel="stylesheet" />
+  <link href="{{asset("assets/plugins/toastr/toastr.css")}}" rel="stylesheet" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
@@ -27,116 +29,50 @@
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
-        
+
       </ul>
 
       <!-- Right navbar links -->
       <ul class="navbar-nav ml-auto">
-        <!-- Navbar Search -->
-        <li class="nav-item">
-          <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-            <i class="fas fa-search"></i>
-          </a>
-          <div class="navbar-search-block">
-            <form class="form-inline">
-              <div class="input-group input-group-sm">
-                <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-                <div class="input-group-append">
-                  <button class="btn btn-navbar" type="submit">
-                    <i class="fas fa-search"></i>
-                  </button>
-                  <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </li>
 
-        <!-- Messages Dropdown Menu -->
-        <li class="nav-item dropdown">
-          <a class="nav-link" data-toggle="dropdown" href="#">
-            <i class="far fa-comments"></i>
-            <span class="badge badge-danger navbar-badge">3</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <a href="#" class="dropdown-item">
-              <!-- Message Start -->
-              <div class="media">
-                <img src="{{asset("assets/dist/img/user1-128x128.jpg")}}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-                <div class="media-body">
-                  <h3 class="dropdown-item-title">
-                    Brad Diesel
-                    <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-                  </h3>
-                  <p class="text-sm">Call me whenever you can...</p>
-                  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                </div>
-              </div>
-              <!-- Message End -->
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-              <!-- Message Start -->
-              <div class="media">
-                <img src="{{asset("assets/dist/img/user8-128x128.jpg")}}" alt="User Avatar" class="img-size-50 img-circle mr-3">
-                <div class="media-body">
-                  <h3 class="dropdown-item-title">
-                    John Pierce
-                    <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
-                  </h3>
-                  <p class="text-sm">I got your message bro</p>
-                  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                </div>
-              </div>
-              <!-- Message End -->
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-              <!-- Message Start -->
-              <div class="media">
-                <img src="{{asset("assets/dist/img/user3-128x128.jpg")}}" alt="User Avatar" class="img-size-50 img-circle mr-3">
-                <div class="media-body">
-                  <h3 class="dropdown-item-title">
-                    Nora Silvester
-                    <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
-                  </h3>
-                  <p class="text-sm">The subject goes here</p>
-                  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                </div>
-              </div>
-              <!-- Message End -->
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
-          </div>
-        </li>
+
         <!-- Notifications Dropdown Menu -->
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
             <i class="far fa-bell"></i>
-            <span class="badge badge-warning navbar-badge">15</span>
+            <span class="badge badge-warning navbar-badge" id="notification-count">0</span>
           </a>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <span class="dropdown-item dropdown-header">15 Notifications</span>
+            <span class="dropdown-item dropdown-header">
+              <span id="total-alerts-text">0 Thông báo hạn sử dụng</span>
+            </span>
             <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-              <i class="fas fa-envelope mr-2"></i> 4 new messages
-              <span class="float-right text-muted text-sm">3 mins</span>
+
+            <!-- Expired Batches Section -->
+            <div id="expired-section" style="display: none;">
+              <span class="dropdown-header px-3 py-2" style="font-size: 12px; color: #dc3545;">
+                <i class="fas fa-exclamation-circle"></i> LÔ ĐÃ HẾT HẠN
+              </span>
+              <div id="expired-list" class="px-2">
+                <!-- Expired items will be loaded here -->
+              </div>
+              <div class="dropdown-divider"></div>
+            </div>
+
+            <!-- Expiring Soon Section -->
+            <div id="expiring-section" style="display: none;">
+              <span class="dropdown-header px-3 py-2" style="font-size: 12px; color: #ffc107;">
+                <i class="fas fa-clock"></i> LÔ SẮP HẾT HẠN
+              </span>
+              <div id="expiring-list" class="px-2">
+                <!-- Expiring items will be loaded here -->
+              </div>
+              <div class="dropdown-divider"></div>
+            </div>
+
+            <a href="{{ route('admin_inventory') }}" class="dropdown-item dropdown-footer">
+              <i class="fas fa-cube"></i> Xem Chi Tiết Quản Lý Kho
             </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-              <i class="fas fa-users mr-2"></i> 8 friend requests
-              <span class="float-right text-muted text-sm">12 hours</span>
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-              <i class="fas fa-file mr-2"></i> 3 new reports
-              <span class="float-right text-muted text-sm">2 days</span>
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
           </div>
         </li>
         <li class="nav-item">
@@ -158,7 +94,7 @@
       <!-- Brand Logo -->
       <a href="{{route('trang_chu')}}" class="brand-link elevation-4">
         <img src="{{asset("assets/dist/img/AdminLTELogo.png")}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">AdminLTE 3</span>
+        <span class="brand-text font-weight-light">TuPhuong</span>
       </a>
 
       <!-- Sidebar -->
@@ -166,10 +102,19 @@
         <!-- Sidebar user (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-            <img src="{{asset("assets/dist/img/user2-160x160.jpg")}}" class="img-circle elevation-2" alt="User Image">
+            @php
+            $img = Auth::user()->image ?? 'uploads/no_image.png';
+            @endphp
+            <img src="{{asset($img)}}" class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
-            <a href="#" class="d-block">{{ Auth::user()->name  }}</a>
+            <a href="{{route('profile')}}" class="d-block">{{ Auth::user()->name  }}</a>
+            <a href="{{ route('logout') }}" class="d-block text-muted small" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" title="Đăng xuất">
+              <i class="fas fa-sign-out-alt"></i>
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+            </form>
           </div>
         </div>
 
@@ -310,7 +255,7 @@
 
               </ul>
             </li>
-            
+
 
             <li class="nav-header">LABELS</li>
             <li class="nav-item">
@@ -341,6 +286,7 @@
     <!-- Content Wrapper. Contains page content -->
 
     @yield('page_content')
+    @include('admin.chatbot-admin')
 
     <!-- /.content-wrapper -->
 
@@ -366,8 +312,88 @@
   <script src="{{asset("assets/dist/js/demo.js")}}"></script>
   <script src="https://cdn.datatables.net/2.1.2/js/dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/2.1.2/js/dataTables.bootstrap5.min.js"></script>
+  <script src="{{asset("assets/plugins/toastr/toastr.min.js")}}"></script>
+
+  <script>
+    // Load expiry notifications
+    function loadExpiryNotifications() {
+      fetch('{{ route("inventory.expiry-notifications") }}')
+        .then(response => response.json())
+        .then(data => {
+          const totalAlerts = data.total_alerts;
+          const expiredCount = data.expired.count;
+          const expiringCount = data.expiring.count;
+
+          // Update notification badge
+          document.getElementById('notification-count').textContent = totalAlerts > 0 ? totalAlerts : '0';
+
+          // Update total alerts text
+          const alertText = totalAlerts === 0 ?
+            'Không có thông báo hạn sử dụng' :
+            `${totalAlerts} Thông báo hạn sử dụng`;
+          document.getElementById('total-alerts-text').textContent = alertText;
+
+          // Display expired batches
+          if (expiredCount > 0) {
+            document.getElementById('expired-section').style.display = 'block';
+            let expiredHtml = '';
+            data.expired.batches.forEach(batch => {
+              expiredHtml += `
+                <a href="{{ route('admin_inventory_history') }}?status=expired" class="dropdown-item">
+                  <div class="row">
+                    <div class="col-8">
+                      <i class="fas fa-times-circle text-danger"></i>
+                      <strong>${batch.product.name}</strong><br>
+                      <small>Lô: ${batch.code}</small>
+                    </div>
+                    <div class="col-4 text-right">
+                      <span class="badge badge-danger">Hết hạn</span>
+                    </div>
+                  </div>
+                </a>
+              `;
+            });
+            document.getElementById('expired-list').innerHTML = expiredHtml;
+          }
+
+          // Display expiring batches
+          if (expiringCount > 0) {
+            document.getElementById('expiring-section').style.display = 'block';
+            let expiringHtml = '';
+            data.expiring.batches.forEach(batch => {
+              const daysUntilExpiry = Math.ceil((new Date(batch.date_end) - new Date()) / (1000 * 60 * 60 * 24));
+              expiringHtml += `
+                <a href="{{ route('admin_inventory_history') }}?status=expiring" class="dropdown-item">
+                  <div class="row">
+                    <div class="col-8">
+                      <i class="fas fa-exclamation-triangle text-warning"></i>
+                      <strong>${batch.product.name}</strong><br>
+                      <small>Lô: ${batch.code} | ${daysUntilExpiry} ngày</small>
+                    </div>
+                    <div class="col-4 text-right">
+                      <span class="badge badge-warning">Sắp hết</span>
+                    </div>
+                  </div>
+                </a>
+              `;
+            });
+            document.getElementById('expiring-list').innerHTML = expiringHtml;
+          }
+        })
+        .catch(error => console.error('Error loading notifications:', error));
+    }
+
+    // Load notifications on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadExpiryNotifications();
+      // Refresh notifications every 5 minutes
+      setInterval(loadExpiryNotifications, 5 * 60 * 1000);
+    });
+  </script>
+
   @stack('scripts')
-  
+  @yield('scriptss')
+
 </body>
 
 </html>

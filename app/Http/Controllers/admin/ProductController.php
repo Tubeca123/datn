@@ -37,7 +37,7 @@ class ProductController extends Controller
         $categories = Category::orderBy('name')->get();
         $brands     = Brand::orderBy('name')->get();
 
-        // Lấy giá theo từng unit
+        
         $price_box = $product->units->where('unit_id', 1)->first()->price_sale ?? 0;
         $price_pack = $product->units->where('unit_id', 2)->first()->price_sale ?? 0;
         $price_pill = $product->units->where('unit_id', 3)->first()->price_sale ?? 0;
@@ -56,8 +56,6 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:4096',
             'price_box' => 'nullable|numeric|min:0',
             'price_pack' => 'nullable|numeric|min:0',
@@ -70,9 +68,9 @@ class ProductController extends Controller
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
+            'details' => $request->details,
             'brand_id' => $request->brand_id,
             'category_id' => $request->category_id,
-            'manufacturer' => $request->manufacturer,
             'country' => $request->country,
             'update_date' => now(),
         ]);
@@ -131,7 +129,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('product.index')->with('success', 'Cập nhật sản phẩm thành công.');
+        return redirect()->route('list_product')->with('success', 'Cập nhật sản phẩm thành công.');
     }
 
 

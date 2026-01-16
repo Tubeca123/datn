@@ -4,51 +4,42 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-class Inventory extends Model
+class Cart_detail extends Model
 {
     use HasFactory;
 
-    protected $table = 'inventory';
+    protected $table = 'cart_detail';
     protected $primaryKey = 'id';
     public $timestamps = false;
 
     protected $fillable = [
+        'user_id',
         'product_id',
-        'product_unit_id',
+        'inventory_id',
         'code',
-        'date_end',
-        'import_quantity',
-        'stock_quantity',
+        'product_unit_id',
+        'price',
+        'quantity',
         'create_date',
         'create_by',
         'update_date',
         'update_by',
-        'isactive',
+        'isactive'
     ];
-
     protected $casts = [
-        'date_end' => 'date',
-        'create_date' => 'datetime',
-        'update_date' => 'datetime',
+        'quantity' => 'float',
+        'price' => 'float',
     ];
-
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
-
     public function productUnit()
     {
         return $this->belongsTo(ProductUnit::class, 'product_unit_id');
     }
-    public function creator()
+    public function inventory()
     {
-        return $this->belongsTo(User::class, 'create_by');
-    }
-    public function remainingPercent(): float
-    {
-        if ($this->import_quantity <= 0) return 0.0;
-        return round(($this->stock_quantity / $this->import_quantity) * 100, 2);
+        return $this->belongsTo(Inventory::class, 'inventory_id');
     }
 }

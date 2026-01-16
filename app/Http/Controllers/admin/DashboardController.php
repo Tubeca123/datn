@@ -16,11 +16,10 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        // Lấy khoảng thời gian từ request (mặc định 30 ngày gần nhất)
+        
         $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
         $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
 
-        // 1. Tổng quan doanh thu
         $totalRevenue = Order::where('isactive', 1)
             ->whereBetween('create_date', [$startDate, $endDate])
             ->sum('total');
@@ -142,7 +141,88 @@ class DashboardController extends Controller
         ));
     }
 
-    // API endpoint cho biểu đồ real-time (nếu cần)
+    
+    /**
+     * Hiển thị chi tiết doanh thu và lợi nhuận
+     */
+    public function revenueDetails(Request $request)
+    {
+        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
+        $view = $request->input('view', 'products'); 
+
+        // Thông tin chi tiết từng sản phẩm với giá nhập/bán
+        $productDetails = OrderDetail::select(
+            'order_detail.product_id',
+            'product.id',
+            DB::raw("COALESCE(product.name, 'Sản phẩm đã xóa') as product_name"),
+            DB::raw("COALESCE(categories.name, 'Danh mục không xác định') as category_name"),
+            'product_unit.price_import',
+            'product_unit.price_sale',
+            DB::raw('COUNT(DISTINCT order_detail.order_id) as order_count'),
+            DB::raw('SUM(order_detail.quantity) as total_quantity'),
+            DB::raw('SUM(order_detail.quantity * order_detail.price) as total_revenue'),
+            DB::raw('SUM(order_detail.quantity * product_unit.price_import) as total_cost'),
+            DB::raw('SUM(order_detail.quantity * (order_detail.price - product_unit.price_import)) as profit')
+        )
+            ->join('order', 'order_detail.order_id', '=', 'order.id')
+            ->leftJoin('product', 'order_detail.product_id', '=', 'product.id')
+            ->leftJoin('categories', 'product.category_id', '=', 'categories.id')
+            ->join('product_unit', 'order_detail.product_unit_id', '=', 'product_unit.id')
+            ->where('order.isactive', 1)
+            ->whereBetween('order.create_date', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+            ->groupBy('order_detail.product_id', 'product.id', 'product.name', 'categories.name', 'product_unit.id', 'product_unit.price_import', 'product_unit.price_sale')
+            ->orderByDesc('total_revenue')
+            ->paginate(20);
+
+        // Chi tiết theo danh mục
+        $categoryDetails = OrderDetail::select(
+            'categories.id',
+            'categories.name as category_name',
+            DB::raw('COUNT(DISTINCT product.id) as product_count'),
+            DB::raw('SUM(order_detail.quantity) as total_quantity'),
+            DB::raw('SUM(order_detail.quantity * order_detail.price) as total_revenue'),
+            DB::raw('SUM(order_detail.quantity * product_unit.price_import) as total_cost'),
+            DB::raw('SUM(order_detail.quantity * (order_detail.price - product_unit.price_import)) as profit')
+        )
+            ->join('order', 'order_detail.order_id', '=', 'order.id')
+            ->join('product', 'order_detail.product_id', '=', 'product.id')
+            ->join('categories', 'product.category_id', '=', 'categories.id')
+            ->join('product_unit', 'order_detail.product_unit_id', '=', 'product_unit.id')
+            ->where('order.isactive', 1)
+            ->whereBetween('order.create_date', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+            ->groupBy('categories.id', 'categories.name')
+            ->orderByDesc('total_revenue')
+            ->get();
+
+        // Tổng thống kê
+        $totalStats = OrderDetail::select(
+            DB::raw('SUM(order_detail.quantity * order_detail.price) as total_revenue'),
+            DB::raw('SUM(order_detail.quantity * product_unit.price_import) as total_cost'),
+            DB::raw('SUM(order_detail.quantity * (order_detail.price - product_unit.price_import)) as total_profit'),
+            DB::raw('AVG(order_detail.price - product_unit.price_import) as avg_profit_per_item')
+        )
+            ->join('order', 'order_detail.order_id', '=', 'order.id')
+            ->join('product_unit', 'order_detail.product_unit_id', '=', 'product_unit.id')
+            ->where('order.isactive', 1)
+            ->whereBetween('order.create_date', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+            ->first();
+
+        $profitMargin = $totalStats->total_revenue > 0 
+            ? ($totalStats->total_profit / $totalStats->total_revenue) * 100 
+            : 0;
+
+        return view('admin.pages.dashboard.revenue-details', compact(
+            'productDetails',
+            'categoryDetails',
+            'totalStats',
+            'profitMargin',
+            'startDate',
+            'endDate',
+            'view'
+        ));
+    }
+    
     public function getRealtimeData()
     {
         $today = Carbon::today();
@@ -161,51 +241,5 @@ class DashboardController extends Controller
         return response()->json($hourlyRevenue);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    
 }

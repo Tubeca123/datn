@@ -14,14 +14,11 @@ class ProductExcelImport implements ToCollection
 {
     public function collection(Collection $rows)
     {
-        // Bỏ dòng tiêu đề
+        
         $rows->shift();
 
         foreach ($rows as $row) {
 
-            // ===============================
-            // Lấy dữ liệu từ Excel
-            // ===============================
             $name = $row[0];
             $description = $row[1];
             $brandId = (int)$row[2];
@@ -43,14 +40,12 @@ class ProductExcelImport implements ToCollection
             $dateEnd  = Carbon::parse($row[14]);
             $importQty = (int)$row[15];
 
-            // Ảnh
+            
             $images = $row[16] ?? '';
             $imageList = array_filter(array_map('trim', explode('|', $images)));
 
 
-            // ===============================
-            // 1. Tìm hoặc tạo mới product
-            // ===============================
+            
             $product = Product::firstOrCreate(
                 [
                     'name' => $name,
@@ -67,7 +62,7 @@ class ProductExcelImport implements ToCollection
                 ]
             );
 
-            // Update lại thông tin nếu đã tồn tại
+           
             $product->update([
                 'description' => $description,
                 'manufacturer' => $manufacturer,
@@ -76,9 +71,7 @@ class ProductExcelImport implements ToCollection
             ]);
 
 
-            // ===============================
-            // 2. Chia giá theo đơn vị
-            // ===============================
+            
             $priceImportVi   = $priceImportHop / $soVi;
             $priceSaleVi     = $priceSaleHop / $soVi;
 
@@ -86,11 +79,7 @@ class ProductExcelImport implements ToCollection
             $priceSaleVien   = $priceSaleVi / $soVien;
 
 
-            // ===============================
-            // 3. Update/Create ProductUnit
-            // ===============================
-
-            // Hộp
+            
             ProductUnit::updateOrCreate(
                 ['product_id' => $product->id, 'unit_id' => $unitHopId],
                 [
@@ -100,7 +89,7 @@ class ProductExcelImport implements ToCollection
                 ]
             );
 
-            // Vỉ
+            
             ProductUnit::updateOrCreate(
                 ['product_id' => $product->id, 'unit_id' => $unitViId],
                 [
@@ -110,7 +99,7 @@ class ProductExcelImport implements ToCollection
                 ]
             );
 
-            // Viên
+           
             ProductUnit::updateOrCreate(
                 ['product_id' => $product->id, 'unit_id' => $unitVienId],
                 [
@@ -121,9 +110,7 @@ class ProductExcelImport implements ToCollection
             );
 
 
-            // ===============================
-            // 4. Nhập kho (Inventory)
-            // ===============================
+            
             Inventory::create([
                 'product_id' => $product->id,
                 'code' => $code,
@@ -131,20 +118,21 @@ class ProductExcelImport implements ToCollection
                 'import_quantity' => $importQty,
                 'stock_quantity' => $importQty,
                 'create_date' => now(),
-                'create_by'=>Auth::user()->id
+                'create_by'=>Auth::user()->id,
+                'isactive' => 1,
             ]);
 
 
 
             if (!empty($imageList)) {
 
-                // Lấy danh sách ảnh cũ (KHÔNG XÓA)
-                $oldImgs = ImageProduct::where('product_id', $product->id)->get();
+                // Xóa tất cả ảnh cũ trong DB cho product này (KHÔNG xóa file trong thư mục uploads/products)
+                ImageProduct::where('product_id', $product->id)->delete();
 
-                // Vị trí bắt đầu cho ảnh mới
-                $pos = ($oldImgs->max('position') ?? 0) + 1;
+                // Vị trí bắt đầu cho ảnh mới (bắt đầu từ 1)
+                $pos = 1;
 
-                // Thêm ảnh mới, KHÔNG đụng ảnh cũ
+                // Thêm ảnh mới, thay thế hoàn toàn các bản ghi cũ
                 foreach ($imageList as $img) {
                     ImageProduct::create([
                         'product_id' => $product->id,
